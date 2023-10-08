@@ -1,6 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ThirdPersonController : MonoBehaviour
 {	
@@ -90,6 +91,28 @@ public class ThirdPersonController : MonoBehaviour
 	public float crouchHeightMultiplier = 0.5f;
 	private bool autoCrouch = false;
 
+	// ----------------------- SPRINT SETTINGS -----------------------
+	[Header("Sprinting")]
+	[Tooltip("Factor by which the player's speed is increased while sprinting.")]
+	public float sprintMultiplier = 2.0f;
+	[Tooltip("Duration (in seconds) for which the player can continuously sprint.")]
+	public float maxStamina = 5.0f;
+	[Tooltip("Stamina depletion rate per second while sprinting.")]
+	public float staminaDepletionRate = 1.0f;
+	[Tooltip("Stamina cost when initiating sprint.")]
+	public float sprintInitiationCost = 0.5f;
+	[Tooltip("Rate at which stamina regenerates when not sprinting.")]
+	public float staminaRegenRate = 0.5f;
+	[Tooltip("Should the player hold to sprint or toggle with button press.")]
+	public bool holdToSprint = true;
+	private float currentStamina;
+	private bool isSprinting = false;
+	[Tooltip("UI slider that represents player's stamina.")]
+	private bool wasSprintingWhenJumped = false;
+
+	public Slider staminaSlider;
+	private bool canSprint = true;
+
 	void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
@@ -100,6 +123,8 @@ public class ThirdPersonController : MonoBehaviour
 		originalCapsuleMeshScaleY = capsuleMeshTransform.localScale.y;
 		originalJumpHeight = jumpHeight;
 		originalMoveSpeed = moveSpeed;
+
+		currentStamina = maxStamina;
 	}
 
 	private void Start()
@@ -113,6 +138,8 @@ public class ThirdPersonController : MonoBehaviour
 		CheckGroundedStatus();
 		Move();
 		Look();
+		UpdateStamina();
+		UpdateStaminaUI();
 	}
 
 	public void OnMove(InputAction.CallbackContext context)
@@ -196,9 +223,38 @@ public class ThirdPersonController : MonoBehaviour
 		}
 	}
 
+	public void OnSprint(InputAction.CallbackContext context)
+	{
+		Debug.Log("Sprinting...");
+		// When the sprint action starts
+		if (context.started)
+		{
+			// Check if we're holding to sprint or toggling
+			if (holdToSprint)
+			{
+				// Begin sprinting
+				StartSprint();
+			}
+			else
+			{
+				// If we're already sprinting, stop. Otherwise, start sprinting.
+				if (isSprinting)
+					StopSprint();
+				else
+					StartSprint();
+			}
+		}
+		// When the sprint action ends (button/key is released)
+		else if (context.canceled && holdToSprint)
+		{
+			// Stop sprinting
+			StopSprint();
+		}
+	}
+
 	public void Move()
 	{
-		float currentMoveSpeed;
+		float currentMoveSpeed = originalMoveSpeed;
 
 		if (IsGrounded())
 		{
@@ -206,18 +262,29 @@ public class ThirdPersonController : MonoBehaviour
 			{
 				currentMoveSpeed = crouchSpeed;
 			}
+			else if (wasSprintingWhenJumped && !isSprinting) // If player was sprinting but released sprint button before landing
+			{
+				currentMoveSpeed = originalMoveSpeed; // Reset to default move speed
+				wasSprintingWhenJumped = false; // Reset the flag
+			}
 			else
 			{
-				currentMoveSpeed = originalMoveSpeed;
+				currentMoveSpeed = isSprinting ? originalMoveSpeed * sprintMultiplier : originalMoveSpeed;
 			}
 
 			lastGroundedMoveDirection = doubleJumpDirection = GetMoveDirection();
 		}
 		else  // In-air
 		{
-			currentMoveSpeed = jumpStartMoveSpeed;
+			if (isSprinting)
+			{
+				wasSprintingWhenJumped = true; // Player jumped while sprinting
+			}
+
+			currentMoveSpeed = wasSprintingWhenJumped ? originalMoveSpeed * sprintMultiplier : jumpStartMoveSpeed;
 			lastGroundedMoveDirection = doubleJumpDirection;
 		}
+
 		characterController.Move(lastGroundedMoveDirection * currentMoveSpeed * Time.deltaTime);
 
 		// Gravity
@@ -391,5 +458,61 @@ public class ThirdPersonController : MonoBehaviour
 
 		// Reset this flag once we handle the landing
 		jumpedWhileCrouching = false;
+	}
+
+	void StartSprint()
+	{
+		if (IsGrounded() && currentStamina > sprintInitiationCost && canSprint)  // Added canSprint check
+		{
+			isSprinting = true;
+			currentStamina -= sprintInitiationCost; // Deduct the initial stamina cost
+		}
+	}
+
+	void StopSprint()
+	{
+		isSprinting = false;
+	}
+
+	void UpdateStamina()
+	{
+		if (isSprinting && currentStamina > 0 && IsGrounded() && canSprint)  // Added canSprint check
+		{
+			currentStamina -= staminaDepletionRate * Time.deltaTime; // Deduct stamina over time while sprinting
+
+			if (currentStamina <= 0)
+			{
+				currentStamina = 0;
+				StopSprint(); // If stamina depletes completely, stop sprinting
+				canSprint = false; // Player cannot sprint anymore until fully recharged
+			}
+		}
+		else if (!isSprinting && currentStamina < maxStamina)
+		{
+			currentStamina += staminaRegenRate * Time.deltaTime; // Regenerate stamina over time when not sprinting
+			currentStamina = Mathf.Min(currentStamina, maxStamina); // Ensure it doesn't exceed maxStamina
+
+			if (currentStamina == maxStamina) // If stamina is fully recharged
+			{
+				canSprint = true; // Player can now sprint again
+			}
+		}
+	}
+
+
+	void UpdateStaminaUI()
+	{
+		staminaSlider.value = currentStamina / maxStamina;
+
+		if (currentStamina < maxStamina)
+		{
+			staminaSlider.gameObject.SetActive(true);
+			// Make the slider always look at the player camera
+			staminaSlider.transform.forward = cameraTransform.forward;
+		}
+		else
+		{
+			staminaSlider.gameObject.SetActive(false);
+		}
 	}
 }
