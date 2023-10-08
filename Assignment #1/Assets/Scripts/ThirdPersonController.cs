@@ -378,6 +378,8 @@ public class ThirdPersonController : MonoBehaviour
 
 	private void HandleLanding()
 	{
+		jumpCount = 0; // Reset jump count
+
 		if (isCrouching)
 		{
 			moveSpeed = crouchSpeed;
