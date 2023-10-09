@@ -118,16 +118,17 @@ public class ThirdPersonController : MonoBehaviour
     // ----------------------- PLAYER UI SETTINGS -----------------------
     [Header("Player UI")]
     [SerializeField] private CanvasGroup staminaUICanvasGroup;  // Drag the CanvasGroup from StaminaUIContainer to this field in the Inspector
-    public float staminaUIFadeDelay = 3f;  // Time (in seconds) after which the stamina UI will start to fade out once stamina is fully recharged.
+    private float staminaUIFadeDelay = 3f;  // Time (in seconds) after which the stamina UI will start to fade out once stamina is fully recharged.
 
     private float fadeDuration = 1.0f;  // Time taken to fade out the UI
     private float staminaUITimer = 0f;  // Time since the player stopped using stamina
-    private float staminaUIDisplayTime = 3.0f; // Time the UI will be displayed before starting to fade out
+    public float delayBeforeFade = 3.0f;  // Defaulted to 3 seconds. You can change this in the Unity editor.
 
     private bool isUIFading = false; // Track if UI is currently in the process of fading
     private bool shouldDisplayUI = false;  // Track if the UI should be shown
 
     public Slider staminaSlider;
+    Coroutine fadeCoroutine;
 
 
     void Awake()
@@ -150,7 +151,7 @@ public class ThirdPersonController : MonoBehaviour
 		Cursor.visible = false;
 
         staminaUICanvasGroup.alpha = 0f;  // Set initial transparency to 0 so it's hidden
-        staminaUITimer = staminaUIDisplayTime;  // Initialize the timer to the display time
+        staminaUITimer = staminaUIFadeDelay;  // Initialize the timer to the display time
     }
 
 	private void Update()
@@ -483,12 +484,20 @@ public class ThirdPersonController : MonoBehaviour
 
     void StartSprint()
     {
-        if (currentStamina > sprintInitiationCost && canSprint)
+        if (IsGrounded() && currentStamina > sprintInitiationCost && canSprint)
         {
             isSprinting = true;
+            staminaUITimer = 0f;
+
+            // Reset any ongoing fade-out coroutine to prevent UI conflicts
+            if (fadeCoroutine != null)
+            {
+                StopCoroutine(fadeCoroutine);
+                fadeCoroutine = null;
+            }
+
             shouldDisplayUI = true;
-            staminaUICanvasGroup.gameObject.SetActive(true);  // Ensure the stamina UI GameObject is active
-            staminaUICanvasGroup.alpha = 1f;  // Set transparency to 1 so it's visible
+            staminaUICanvasGroup.alpha = 1f;  // Immediately set UI alpha value to 1, making it fully visible
             currentStamina -= sprintInitiationCost;
 
             staminaUITimer = 0f;  // Reset the timer whenever sprinting starts
@@ -504,7 +513,6 @@ public class ThirdPersonController : MonoBehaviour
     {
         if (isSprinting && currentStamina > 0 && IsGrounded() && canSprint)
         {
-            staminaUITimer = 0f;  // Reset the timer whenever stamina is being used
             currentStamina -= staminaDepletionRate * Time.deltaTime;
 
             if (currentStamina <= 0)
@@ -513,69 +521,77 @@ public class ThirdPersonController : MonoBehaviour
                 StopSprint();
                 canSprint = false;
             }
-        }
-        else if (!isSprinting && currentStamina < maxStamina)
-        {
-            staminaUITimer += Time.deltaTime;  // Increase the timer when player isn't using stamina
-            currentStamina += staminaRegenRate * Time.deltaTime;
-            currentStamina = Mathf.Min(currentStamina, maxStamina);
 
-            if (currentStamina == maxStamina)
+            staminaUITimer = 0f;  // Reset the timer when stamina is being used
+            if (fadeCoroutine != null)
+            {
+                StopCoroutine(fadeCoroutine);
+                fadeCoroutine = null;
+            }
+        }
+        else
+        {
+            if (!isSprinting && currentStamina < maxStamina)
+            {
+                currentStamina += staminaRegenRate * Time.deltaTime;
+                currentStamina = Mathf.Min(currentStamina, maxStamina);
+            }
+
+            if (currentStamina >= maxStamina - 0.01f && !isSprinting)  // Adjusted check for max stamina
             {
                 canSprint = true;
-                shouldDisplayUI = true;  // Make the UI ready to be displayed as soon as stamina is fully recharged
+                staminaUITimer += Time.deltaTime;
+
+                // If our timer exceeds the set time, and there is no ongoing fade operation, initiate the fade
+                if (staminaUITimer > delayBeforeFade && fadeCoroutine == null)
+                {
+                    fadeCoroutine = StartCoroutine(FadeOutUI());
+                }
+            }
+            else
+            {
+                // Reset timer if stamina is not full or if player starts sprinting again
+                staminaUITimer = 0f;
             }
         }
 
         UpdateStaminaUI();
-
-        if (currentStamina == maxStamina)
-        {
-            staminaUITimer += Time.deltaTime;  // Increase the timer when stamina is full
-
-            // If stamina reaches its maximum and the timer exceeds the fade delay, start the fade out coroutine
-            if (staminaUITimer > staminaUIFadeDelay)
-            {
-                StartCoroutine(FadeOutUI());
-            }
-        }
     }
-
     void UpdateStaminaUI()
     {
         staminaSlider.value = currentStamina / maxStamina;
 
+        // Always display UI when sprinting or when stamina is not full
+        shouldDisplayUI = isSprinting || currentStamina < maxStamina;
+
         if (shouldDisplayUI)
         {
-            staminaSlider.gameObject.SetActive(true);  // Only need to worry about setting it active here
+            staminaSlider.gameObject.SetActive(true);
             staminaSlider.transform.forward = cameraTransform.forward;
-
-            if (currentStamina == maxStamina && staminaUITimer > staminaUIDisplayTime && !isUIFading)
-            {
-                StartCoroutine(FadeOutUI());
-            }
+        }
+        else if (!shouldDisplayUI && !isUIFading)  // Only hide when it's not fading
+        {
+            staminaSlider.gameObject.SetActive(false);
         }
     }
 
     IEnumerator FadeOutUI()
     {
+        Debug.Log("FadeOutUI started!"); // For debugging
         isUIFading = true;
         float elapsed = 0f;
         float initialAlpha = staminaUICanvasGroup.alpha;
 
-        while (elapsed < fadeDuration && !isSprinting)  // Stop fading if player starts sprinting
+        while (elapsed < fadeDuration)
         {
             elapsed += Time.deltaTime;
             staminaUICanvasGroup.alpha = Mathf.Lerp(initialAlpha, 0f, elapsed / fadeDuration);
             yield return null;
         }
 
-        if (!isSprinting)  // Only hide the UI and stop displaying if player is not sprinting
-        {
-            shouldDisplayUI = false;
-            staminaUICanvasGroup.gameObject.SetActive(false);
-        }
-
+        Debug.Log("FadeOutUI completed!"); // For debugging
+        shouldDisplayUI = false;
         isUIFading = false;
+        fadeCoroutine = null;
     }
 }
