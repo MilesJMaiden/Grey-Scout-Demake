@@ -111,9 +111,9 @@ public class ThirdPersonController : MonoBehaviour
 	[Tooltip("UI slider that represents player's stamina.")]
 	private bool wasSprintingWhenJumped = false;
 
-
-
 	private bool canSprint = true;
+
+    public PlayerInteraction playerInteraction;
 
     // ----------------------- PLAYER UI SETTINGS -----------------------
     [Header("Player UI")]
@@ -129,7 +129,6 @@ public class ThirdPersonController : MonoBehaviour
 
     public Slider staminaSlider;
     Coroutine fadeCoroutine;
-
 
     void Awake()
 	{
@@ -274,7 +273,12 @@ public class ThirdPersonController : MonoBehaviour
 		}
 	}
 
-	public void Move()
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        playerInteraction.OnInteract(context);
+    }
+
+    public void Move()
 	{
 		float currentMoveSpeed = originalMoveSpeed;
 

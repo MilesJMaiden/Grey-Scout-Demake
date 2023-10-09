@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -30,6 +31,9 @@ public class Captive : MonoBehaviour
     // Timer to track how long the player has been out of the captive's line of sight.
     private float timeOutOfSight = 0;
 
+    public CanvasGroup interactionCanvasGroup; // Reference to the Canvas Group component
+    public GameObject interactionText; // Reference to the TextMeshPro component
+
     private void Awake()
     {
         // Ensure the captive has the required interaction zone (SphereCollider).
@@ -44,6 +48,8 @@ public class Captive : MonoBehaviour
 
     private void Start()
     {
+        interactionText.SetActive(false);
+
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
         navAgent = GetComponent<NavMeshAgent>();
 
@@ -94,24 +100,19 @@ public class Captive : MonoBehaviour
         }
     }
 
-
-        // When the player enters the captive's interaction zone.
-        private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player has entered the interaction range");
-            playerInteraction.ShowInteractionText();
+            ShowInteractionText();
         }
     }
 
-    // When the player exits the captive's interaction zone.
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player has left the interaction range");
-            playerInteraction.HideInteractionText();
+            HideInteractionText();
         }
     }
 
@@ -119,11 +120,22 @@ public class Captive : MonoBehaviour
     public void ToggleFollow()
     {
         isFollowing = !isFollowing;
+        Debug.Log($"Captive is now following: {isFollowing}");
 
-        // If starting to follow, start the sight and distance checks.
         if (isFollowing)
         {
             StartCoroutine(SightAndDistanceChecks());
         }
+    }
+
+    public void ShowInteractionText()
+    {
+        interactionText.SetActive(true);
+        //interactionText.text = "Press E to Interact";
+    }
+
+    public void HideInteractionText()
+    {
+        interactionText.SetActive(false);
     }
 }
