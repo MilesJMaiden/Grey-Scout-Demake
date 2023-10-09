@@ -6,24 +6,28 @@ public class PlayerInteraction : MonoBehaviour
 {
     public TMP_Text interactionText;  // Reference to the UI text element
 
-    private Captive closestNPC;
+    private Captive closestCaptive;
 
+    private void Start()
+    {
+        interactionText.enabled = false;
+    }
     private void Update()
     {
         CheckForNearbyCaptive();
 
-        if (closestNPC && closestNPC.IsWithinInteractionRange() && Input.GetKeyDown(KeyCode.E))
+        if (closestCaptive && Input.GetKeyDown(KeyCode.E))
         {
-            closestNPC.ToggleFollow();
+            closestCaptive.ToggleFollow();
         }
     }
 
     private void CheckForNearbyCaptive()
     {
-        Captive[] captives = FindObjectsOfType<Captive>();   
+        Captive[] captives = FindObjectsOfType<Captive>();
         float minDistance = Mathf.Infinity;
 
-        closestNPC = null;
+        closestCaptive = null;
 
         foreach (var npc in captives)
         {
@@ -31,17 +35,30 @@ public class PlayerInteraction : MonoBehaviour
             if (distanceToNPC < minDistance)
             {
                 minDistance = distanceToNPC;
-                closestNPC = npc;
+                closestCaptive = npc;
             }
         }
 
-        if (closestNPC && closestNPC.IsWithinInteractionRange())
+        // Since the Captive's IsWithinInteractionRange method is now reliant on a trigger collider,
+        // we'll modify the condition here to simply check if interactionText is enabled.
+        if (closestCaptive && interactionText.enabled)
         {
-            interactionText.enabled = true;
+            interactionText.text = "Press E to Interact"; // Change this if you want a different message
         }
         else
         {
             interactionText.enabled = false;
         }
+    }
+
+    public void ShowInteractionText()
+    {
+        interactionText.enabled = true;
+        interactionText.text = "Press E to Interact"; // Or your desired message
+    }
+
+    public void HideInteractionText()
+    {
+        interactionText.enabled = false;
     }
 }

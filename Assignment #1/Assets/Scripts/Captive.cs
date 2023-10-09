@@ -1,44 +1,69 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Captive : MonoBehaviour
 {
-    public float interactionRange = 3f;  // Distance within which player can interact with the NPC
-    public float followDistance = 2f;  // Distance at which NPC will follow the player
+    public float followDistance = 2f;
 
     private bool isFollowing = false;
     private Transform playerTransform;
+    private NavMeshAgent navAgent;
+    public SphereCollider interactionZone;  // The trigger collider
+
+    public PlayerInteraction playerInteraction;
+
+    private void Awake()
+    {
+
+        if (!interactionZone)
+        {
+            Debug.LogError("Captive is missing a SphereCollider component for the interaction zone.");
+            this.enabled = false;  // Disable the script if there's no SphereCollider
+            return;
+        }
+
+        interactionZone.isTrigger = true;  // Ensure the SphereCollider is set as a trigger
+    }
 
     private void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+        navAgent = GetComponent<NavMeshAgent>();
     }
 
     private void Update()
     {
         if (isFollowing)
         {
-            // Follow the player with a certain distance
             Vector3 followPosition = playerTransform.position - playerTransform.forward * followDistance;
-            transform.position = Vector3.Lerp(transform.position, followPosition, Time.deltaTime);
+            navAgent.SetDestination(followPosition);
+        }
+        else
+        {
+            navAgent.ResetPath();
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player has entered the interaction range");
+            playerInteraction.ShowInteractionText();
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            Debug.Log("Player has left the interaction range");
+            playerInteraction.HideInteractionText();
         }
     }
 
     public void ToggleFollow()
     {
         isFollowing = !isFollowing;
-    }
-
-    public bool IsWithinInteractionRange()
-    {
-        return Vector3.Distance(transform.position, playerTransform.position) <= interactionRange;
-    }
-
-    // This will draw a sphere in the Unity editor when the NPC is selected
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.green;  // Set the color to green (or any color you prefer)
-        Gizmos.DrawWireSphere(transform.position, interactionRange);
     }
 }
