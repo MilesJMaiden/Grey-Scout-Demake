@@ -1099,7 +1099,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 217076f468e4a5d4195dad303564641f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interactionText: {fileID: 766188542}
 --- !u!1 &749595594
 GameObject:
   m_ObjectHideFlags: 0
@@ -2516,6 +2515,16 @@ PrefabInstance:
         type: 3}
       propertyPath: followDistance
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894906856020488799, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: timeToLoseSight
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5894906856020488799, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: maxFollowDistance
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5894906856020488799, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}

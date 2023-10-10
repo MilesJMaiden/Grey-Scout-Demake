@@ -209,10 +209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 680e336634fe76045829a70c91481414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followDistance: 2
+  followDistance: 3
   playerInteraction: {fileID: 0}
-  maxFollowDistance: 6
-  timeToLoseSight: 5
+  maxFollowDistance: 12
+  timeToLoseSight: 6
   interactionZone: {fileID: 6981554976237635523}
   interactionCanvasGroup: {fileID: 1367105107916557044}
   interactionText: {fileID: 7711897439991346876}
@@ -423,7 +423,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 5
+  m_Radius: 6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7711897439991346876
 GameObject:

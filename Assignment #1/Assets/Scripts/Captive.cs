@@ -116,19 +116,24 @@ public class Captive : MonoBehaviour
         }
     }
 
-    // Toggle the following state of the captive.
-    public void ToggleFollow()
-    {
-        isFollowing = !isFollowing;
-        Debug.Log($"Captive is now following: {isFollowing}");
+	// Toggle the following state of the captive.
+	public void ToggleFollow()
+	{
+		isFollowing = !isFollowing;
+		timeOutOfSight = 0;  // Reset the out of sight timer
 
-        if (isFollowing)
+		Debug.Log($"Captive is now following: {isFollowing}");
+
+		if (isFollowing)
+		{
+			StartCoroutine(SightAndDistanceChecks());
+		} else
         {
-            StartCoroutine(SightAndDistanceChecks());
-        }
-    }
+			navAgent.ResetPath();
+		}
+	}
 
-    public void ShowInteractionText()
+	public void ShowInteractionText()
     {
         interactionText.SetActive(true);
         //interactionText.text = "Press E to Interact";
