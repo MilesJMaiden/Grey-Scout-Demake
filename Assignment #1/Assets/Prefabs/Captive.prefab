@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1578814135666705786}
   - component: {fileID: 1367105107916557044}
   - component: {fileID: 4545806817354907634}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,9 +209,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 680e336634fe76045829a70c91481414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followDistance: 3
+  followDistance: 2
   playerInteraction: {fileID: 0}
-  maxFollowDistance: 12
+  maxFollowDistance: 8
   timeToLoseSight: 6
   interactionZone: {fileID: 6981554976237635523}
   interactionCanvasGroup: {fileID: 1367105107916557044}
@@ -235,7 +235,7 @@ Rigidbody:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
@@ -436,7 +436,7 @@ GameObject:
   - component: {fileID: 7152133873264742042}
   - component: {fileID: 8064057081451399719}
   - component: {fileID: 6094867715778009843}
-  m_Layer: 5
+  m_Layer: 0
   m_Name: Interaction Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}

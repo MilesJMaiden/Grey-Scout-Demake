@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -130,7 +131,10 @@ public class ThirdPersonController : MonoBehaviour
     public Slider staminaSlider;
     Coroutine fadeCoroutine;
 
-    void Awake()
+	public List<Captive> captives = new List<Captive>();
+	public const int maxCaptives = 3;
+
+	void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
 
@@ -598,4 +602,42 @@ public class ThirdPersonController : MonoBehaviour
         isUIFading = false;
         fadeCoroutine = null;
     }
+
+	public void AddCaptive(Captive captive)
+	{
+		if (captives.Count < maxCaptives)
+		{
+			captives.Add(captive);
+		}
+	}
+
+	public void RemoveCaptive(Captive captive)
+	{
+		captives.Remove(captive);
+		// Adjust following behavior for remaining captives, if needed.
+		// The subsequent captive will now follow the previous one.
+	}
+
+	public Captive GetCaptiveClosestToScreenCenter()
+	{
+		Captive closestCaptive = null;
+		float closestDistance = float.MaxValue;
+
+		foreach (var captive in captives)
+		{
+			Vector3 screenPos = Camera.main.WorldToScreenPoint(captive.transform.position);
+			float distanceToCenter = Vector2.Distance(new Vector2(Screen.width / 2, Screen.height / 2), screenPos);
+
+			if (distanceToCenter < closestDistance)
+			{
+				closestDistance = distanceToCenter;
+				closestCaptive = captive;
+			}
+		}
+		return closestCaptive;
+	}
+
+	// In Captive's script
+
+
 }

@@ -1,11 +1,14 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class Captive : MonoBehaviour
 {
-    // Distance within which the captive will try to stay behind the player.
-    public float followDistance = 2f;
+	public ThirdPersonController thirdPersonController; // Reference to the Player script
+
+	// Distance within which the captive will try to stay behind the player.
+	public float followDistance = 2f;
 
     // Reference to the player's interaction script to manage UI.
     public PlayerInteraction playerInteraction;
@@ -46,61 +49,93 @@ public class Captive : MonoBehaviour
         interactionZone.isTrigger = true; // Ensure the SphereCollider is set as a trigger.
     }
 
-    private void Start()
-    {
-        interactionText.SetActive(false);
+	private void Start()
+	{
+		interactionText.SetActive(false);
 
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        navAgent = GetComponent<NavMeshAgent>();
+		playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
 
-        // Start the sight and distance checks coroutine if the captive is set to follow.
-        if (isFollowing)
-        {
-            StartCoroutine(SightAndDistanceChecks());
-        }
-    }
+		navAgent = GetComponent<NavMeshAgent>();
+		navAgent.stoppingDistance = 1f;
+		navAgent.acceleration = 8f; // Increase acceleration for smoother movement
+		navAgent.angularSpeed = 120f; // Decrease angular speed for smoother rotations
 
-    // Coroutine to handle sight and distance checks without using Update().
-    private System.Collections.IEnumerator SightAndDistanceChecks()
-    {
-        while (isFollowing)
-        {
-            Vector3 followPosition = playerTransform.position - playerTransform.forward * followDistance;
-            navAgent.SetDestination(followPosition);
+		if (isFollowing)
+		{
+			StartCoroutine(SightAndDistanceChecks());
+		}
+	}
 
-            // Check if player is too far.
-            if (Vector3.Distance(transform.position, playerTransform.position) > maxFollowDistance)
-            {
-                ToggleFollow();
-                yield break; // Exit the coroutine.
-            }
+	private void Update()
+	{
+		if (isFollowing)
+		{
+			Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+			directionToPlayer.y = 0; // Keep the captive level and only rotate around the y-axis
+			Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+			transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 3f); // Reduced from 5f
+		}
+	}
 
-            // Raycasting for line of sight.
-            RaycastHit hit;
-            if (Physics.Raycast(transform.position, (playerTransform.position - transform.position).normalized, out hit))
-            {
-                if (hit.transform.CompareTag("Player"))
-                {
-                    timeOutOfSight = 0; // Player is visible, reset the timer.
-                }
-                else
-                {
-                    timeOutOfSight += 0.1f; // Increment the timer.
-                }
-            }
+	private enum CaptiveState
+	{
+		Idle,
+		Following
+	}
 
-            // Check if player has been out of sight for too long.
-            if (timeOutOfSight >= timeToLoseSight)
-            {
-                ToggleFollow();
-                yield break; // Exit the coroutine.
-            }
+	private CaptiveState currentState = CaptiveState.Idle;
 
-            yield return new WaitForSeconds(0.1f); // Wait for a short duration before the next check.
-        }
-    }
+	private IEnumerator SightAndDistanceChecks()
+	{
 
-    private void OnTriggerEnter(Collider other)
+		while (isFollowing)
+		{
+			Transform followTarget = GetFollowTarget();
+			Vector3 directionToFollowTarget = (followTarget.position - transform.position).normalized;
+			Vector3 followPosition = followTarget.position - followTarget.forward * followDistance;
+
+			Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+
+			navAgent.SetDestination(followPosition);
+
+			// Ensure the captive is always facing the player.
+			directionToPlayer.y = 0; // Keep the captive level and only rotate around the y-axis
+			Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+			transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 2f);
+
+			// Check if the player has moved too far away from the captive.
+			if (Vector3.Distance(transform.position, playerTransform.position) > maxFollowDistance)
+			{
+				ToggleFollow();
+				yield break;
+			}
+
+			// Check for line of sight.
+			Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
+			RaycastHit hit;
+			if (Physics.Raycast(rayOrigin, (playerTransform.position - rayOrigin).normalized, out hit))
+			{
+				if (hit.transform.CompareTag("Player"))
+				{
+					timeOutOfSight = 0;
+				}
+				else
+				{
+					timeOutOfSight += 0.1f;
+				}
+			}
+
+			if (timeOutOfSight >= timeToLoseSight)
+			{
+				ToggleFollow();
+				yield break;
+			}
+
+			yield return new WaitForSeconds(0.1f);
+		}
+	}
+
+	private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
@@ -143,4 +178,24 @@ public class Captive : MonoBehaviour
     {
         interactionText.SetActive(false);
     }
+
+	private Transform GetFollowTarget()
+	{
+		int index = thirdPersonController.captives.IndexOf(this);
+
+		if (index == 0 || index == -1) // Add check for -1
+		{
+			// If this is the first captive or captive not found in the list, follow the player
+			return thirdPersonController.transform;
+		}
+		else if (index > 0 && index < thirdPersonController.captives.Count) // Add this check
+		{
+			// Follow the previous captive in the list
+			return thirdPersonController.captives[index - 1].transform;
+		}
+
+		// Handle other unexpected situations (log error or default behavior)
+		Debug.LogError($"Unexpected index {index} for captive.");
+		return thirdPersonController.transform;
+	}
 }
