@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,39 +8,70 @@ public class PlayerInteraction : MonoBehaviour
 {
     private Captive closestCaptive;
 
-    public void OnInteract(InputAction.CallbackContext context)
-    {
-        if (context.started && closestCaptive) // If the interaction button is pressed and there's a captive nearby
-        {
-            closestCaptive.ToggleFollow();
-        }
-    }
+	private List<Captive> captivesInRange = new List<Captive>();
 
-    private void Start()
+	public void OnInteract(InputAction.CallbackContext context)
+	{
+		if (context.started && closestCaptive)
+		{
+			closestCaptive.ToggleFollow();
+		}
+	}
+
+	private void Start()
     {
         
     }
     private void Update()
     {
-        CheckForNearbyCaptive();
-    }
+		CheckForNearbyCaptive();
 
-    private void CheckForNearbyCaptive()
-    {
-        Captive[] captives = FindObjectsOfType<Captive>();
-        float minDistance = Mathf.Infinity;
+	}
 
-        Captive previousClosest = closestCaptive; // Store the previous closest captive
-        closestCaptive = null;
+	public void AddCaptiveInRange(Captive captive)
+	{
+		if (!captivesInRange.Contains(captive))
+		{
+			captivesInRange.Add(captive);
+		}
+	}
 
-        foreach (var captive in captives)
-        {
-            float distanceToCaptive = Vector3.Distance(transform.position, captive.transform.position);
-            if (distanceToCaptive < minDistance)
-            {
-                minDistance = distanceToCaptive;
-                closestCaptive = captive;
-            }
-        }
-    }
+	public void RemoveCaptiveInRange(Captive captive)
+	{
+		if (captivesInRange.Contains(captive))
+		{
+			captivesInRange.Remove(captive);
+		}
+	}
+
+	private float DistanceToScreenCenter(Vector3 worldPosition)
+	{
+		Vector3 screenPosition = Camera.main.WorldToScreenPoint(worldPosition);
+		Vector2 screenCenter = new Vector2(Screen.width / 2, Screen.height / 2);
+		return Vector2.Distance(screenPosition, screenCenter);
+	}
+	private void CheckForNearbyCaptive()
+	{
+		float closestScreenDistance = float.MaxValue;
+
+		Captive previousClosest = closestCaptive; // Store the previous closest captive
+		closestCaptive = null;
+
+		foreach (var captive in captivesInRange)  // Only consider captives in range
+		{
+			float screenDistance = DistanceToScreenCenter(captive.transform.position);
+			if (screenDistance < closestScreenDistance)
+			{
+				closestScreenDistance = screenDistance;
+				closestCaptive = captive;
+			}
+		}
+
+		if (previousClosest != closestCaptive)
+		{
+			if (previousClosest) previousClosest.HideInteractionText();
+			if (closestCaptive) closestCaptive.ShowInteractionText();
+		}
+	}
+
 }

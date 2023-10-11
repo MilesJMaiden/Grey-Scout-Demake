@@ -11,6 +11,8 @@ public class ThirdPersonController : MonoBehaviour
 	public float gravity = -9.81f;
 	private Vector3 velocity;
 
+
+
 	// ----------------------- COMPONENT REFERENCES -----------------------
 	private CharacterController characterController;
 
