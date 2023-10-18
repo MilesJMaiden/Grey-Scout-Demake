@@ -136,10 +136,25 @@ public class ThirdPersonController : MonoBehaviour
 	public List<Captive> captives = new List<Captive>();
 	public const int maxCaptives = 3;
 
+	// ------------------- PLAYER DETECTION SETTINGS --------------------
+	[Header("Detection Settings")]
+	[Header("Detection Settings")]
+
+	[Tooltip("Detection radius when the player is walking.")]
+	public float walkDetectionRadius = 1f;
+
+	[Tooltip("Detection radius when the player is sprinting.")]
+	public float sprintDetectionRadius = 2f;
+
+	[Tooltip("Detection radius when the player is crouching.")]
+	public float crouchDetectionRadius = 0.5f;
+
+	[Tooltip("Reference to the SphereCollider that manages player detection range.")]
+	[SerializeField] private SphereCollider detectionCollider;
+
 	void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
-
 		// Store original values
 		originalControllerHeight = characterController.height;
 		originalControllerCenter = characterController.center;
@@ -166,6 +181,7 @@ public class ThirdPersonController : MonoBehaviour
 		Look();
 		UpdateStamina();
 		UpdateStaminaUI();
+		AdjustDetectionCollider();
 	}
 
 	public void OnMove(InputAction.CallbackContext context)
@@ -639,7 +655,19 @@ public class ThirdPersonController : MonoBehaviour
 		return closestCaptive;
 	}
 
-	// In Captive's script
-
-
+	private void AdjustDetectionCollider()
+	{
+		if (isSprinting)  // You need to define this logic based on your movement script
+		{
+			detectionCollider.radius = sprintDetectionRadius;
+		}
+		else if (isCrouching)  // You need to define this logic
+		{
+			detectionCollider.radius = crouchDetectionRadius;
+		}
+		else
+		{
+			detectionCollider.radius = walkDetectionRadius;
+		}
+	}
 }
