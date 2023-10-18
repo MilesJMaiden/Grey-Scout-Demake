@@ -32,7 +32,10 @@ public class Enemy : MonoBehaviour
 	[SerializeField]
 	public NavMeshAgent navAgent;
 
+	[SerializeField]
 	private GameObject player;
+
+	[SerializeField]
 	private bool isPlayerDetected = false;
 
 	private void Start()
