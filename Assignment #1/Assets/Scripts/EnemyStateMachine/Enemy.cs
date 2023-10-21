@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-	public IEnemyState currentState;
+	public IEnemyState CurrentState { get; private set; }
 
 	[Header("Patrol Settings")]
 	[Tooltip("Origin point from which the enemy patrols.")]
@@ -99,5 +99,40 @@ public class Enemy : MonoBehaviour
 	{
 		currentDestination = (currentDestination == pointA) ? pointB : pointA;
 		navAgent.SetDestination(currentDestination);
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		if (other.gameObject == player)
+		{
+			isPlayerDetected = true;
+			// Switch to Alert or Chase state
+			TransitionToState(new AlertState());  // You'll need to implement this state
+		}
+	}
+
+	private void OnTriggerExit(Collider other)
+	{
+		if (other.gameObject == player)
+		{
+			isPlayerDetected = false;
+			// Switch back to Patrol state or some other state
+			TransitionToState(new PatrolState());
+		}
+	}
+
+	// Check for detection
+	public bool IsPlayerDetected()
+	{
+		return isPlayerDetected;
+	}
+
+	public void TransitionToState(IEnemyState newState)
+	{
+		if (CurrentState != null)
+			CurrentState.ExitState(this);
+
+		CurrentState = newState;
+		CurrentState.EnterState(this);
 	}
 }
