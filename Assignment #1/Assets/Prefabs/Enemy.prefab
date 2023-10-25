@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 488970183811241340}
   - component: {fileID: 7716668464446940678}
   - component: {fileID: 4542237210014010949}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: alert_UI_label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,7 +144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3849114835012495617}
   - component: {fileID: 5349669365485656760}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 726889031990345527}
   - component: {fileID: 1151639260967922177}
   - component: {fileID: 6530281520888149205}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: enemy_UI_label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   - component: {fileID: 3874045352122336564}
   - component: {fileID: 2107451097536641738}
   - component: {fileID: 3259493047682978782}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +409,7 @@ GameObject:
   - component: {fileID: 7259765275107379905}
   - component: {fileID: 9094812089822542838}
   - component: {fileID: 5951818434359322628}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: enemy_canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -521,7 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 285899575975953596}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PlayerDetection
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -556,7 +556,7 @@ GameObject:
   - component: {fileID: 7166145340908923428}
   - component: {fileID: 4181515947946441005}
   - component: {fileID: 7091344128447096522}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -662,7 +662,7 @@ GameObject:
   - component: {fileID: 6100558436579071907}
   - component: {fileID: 5520496972589474271}
   - component: {fileID: 8263357682338495038}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -735,7 +735,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2356607698639614013}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -771,7 +771,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4938929587555511634}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: alert_UI_container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -810,7 +810,8 @@ GameObject:
   - component: {fileID: 5394431295042706528}
   - component: {fileID: 8068582074042508533}
   - component: {fileID: 8139019507428369659}
-  m_Layer: 0
+  - component: {fileID: 6367739011241424}
+  m_Layer: 9
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -854,6 +855,8 @@ MonoBehaviour:
   pointB: {x: 0, y: 0, z: 0}
   currentDestination: {x: 0, y: 0, z: 0}
   navAgent: {fileID: 8139019507428369659}
+  player: {fileID: 0}
+  isPlayerDetected: 0
 --- !u!195 &8139019507428369659
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -876,6 +879,33 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!54 &6367739011241424
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7827361852488659942}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &8060884143598369024
 GameObject:
   m_ObjectHideFlags: 0
@@ -886,7 +916,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7465679388277018889}
   - component: {fileID: 6228344278853414827}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: alert_UI_slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -974,7 +1004,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6237771275034424066}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

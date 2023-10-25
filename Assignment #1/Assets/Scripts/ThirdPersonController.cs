@@ -118,8 +118,10 @@ public class ThirdPersonController : MonoBehaviour
 
     public PlayerInteraction playerInteraction;
 
-    // ----------------------- PLAYER UI SETTINGS -----------------------
-    [Header("Player UI")]
+	public bool IsHidden { get; private set; }
+
+	// ----------------------- PLAYER UI SETTINGS -----------------------
+	[Header("Player UI")]
     [SerializeField] private CanvasGroup staminaUICanvasGroup;  // Drag the CanvasGroup from StaminaUIContainer to this field in the Inspector
     private float staminaUIFadeDelay = 3f;  // Time (in seconds) after which the stamina UI will start to fade out once stamina is fully recharged.
 
@@ -603,7 +605,7 @@ public class ThirdPersonController : MonoBehaviour
 
     IEnumerator FadeOutUI()
     {
-        Debug.Log("FadeOutUI started!"); // For debugging
+        //Debug.Log("FadeOutUI started!"); // For debugging
         isUIFading = true;
         float elapsed = 0f;
         float initialAlpha = staminaUICanvasGroup.alpha;
@@ -615,7 +617,7 @@ public class ThirdPersonController : MonoBehaviour
             yield return null;
         }
 
-        Debug.Log("FadeOutUI completed!"); // For debugging
+        //Debug.Log("FadeOutUI completed!"); // For debugging
         shouldDisplayUI = false;
         isUIFading = false;
         fadeCoroutine = null;
@@ -668,6 +670,22 @@ public class ThirdPersonController : MonoBehaviour
 		else
 		{
 			detectionCollider.radius = walkDetectionRadius;
+		}
+	}
+
+	private void OnTriggerEnter(Collider other)
+	{
+		if (other.CompareTag("HideZone"))
+		{
+			IsHidden = true;
+		}
+	}
+
+	private void OnTriggerExit(Collider other)
+	{
+		if (other.CompareTag("HideZone"))
+		{
+			IsHidden = false;
 		}
 	}
 }

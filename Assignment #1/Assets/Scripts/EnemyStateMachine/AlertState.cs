@@ -34,13 +34,15 @@ public class AlertState : IEnemyState
 		this.enemy = enemyContext;
 		alertTimer -= Time.deltaTime;
 
-		// Check if the alert duration has elapsed
-		if (alertTimer <= 0)
+		// If the player is within the chase limit and not hidden, chase the player
+		if (enemy.IsPlayerDetected() && enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
 		{
-			ToPatrolState(); // After alert duration, return to patrolling
+			enemy.TransitionToState(new ChaseState());
 		}
-
-		// Handle other alert behaviors, such as looking around or moving to the last known player position.
+		else if (alertTimer <= 0)
+		{
+			ToPatrolState();
+		}
 	}
 
 	public void ExitState(Enemy enemyContext)
@@ -54,6 +56,7 @@ public class AlertState : IEnemyState
 	{
 		enemy.TransitionToState(new PatrolState());
 	}
+
 
 	// You can add more transitions to other states if necessary.
 }

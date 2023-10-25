@@ -33,10 +33,21 @@ public class Enemy : MonoBehaviour
 	public NavMeshAgent navAgent;
 
 	[SerializeField]
-	private GameObject player;
+	public GameObject player;
+
+	[SerializeField]
+	public float chaseSpeed;
+
+	[SerializeField]
+	public float chaseLimit;
 
 	[SerializeField]
 	private bool isPlayerDetected = false;
+
+	public float chaseDuration = 10f; // Duration for which the enemy will chase before looking around
+	public float lookAroundDuration = 5f; // Duration for which the enemy will look around
+	public float investigateDuration = 5f; // Duration the enemy will investigate the last known player position
+	private Vector3 lastKnownPlayerPosition;
 
 	private void Start()
 	{
@@ -63,6 +74,12 @@ public class Enemy : MonoBehaviour
 		SetInitialPatrolDestination();
 	}
 
+	private void SetupNavAgent()
+	{
+		navAgent = GetComponent<NavMeshAgent>();
+		navAgent.speed = patrolSpeed;
+	}
+
 	public void Patrol()
 	{
 		// If the enemy reaches the current destination, switch the destination
@@ -70,12 +87,6 @@ public class Enemy : MonoBehaviour
 		{
 			SwitchPatrolPoint();
 		}
-	}
-
-	private void SetupNavAgent()
-	{
-		navAgent = GetComponent<NavMeshAgent>();
-		navAgent.speed = patrolSpeed;
 	}
 
 	private void CalculatePatrolPoints()
@@ -103,11 +114,11 @@ public class Enemy : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
+		Debug.Log("Trigger Entered by: " + other.gameObject.name);
 		if (other.gameObject == player)
 		{
 			isPlayerDetected = true;
-			// Switch to Alert or Chase state
-			TransitionToState(new AlertState(this, navAgent));
+			TransitionToState(new AlertState(this, navAgent));  // adjusted based on previous suggestions
 		}
 	}
 
@@ -119,6 +130,17 @@ public class Enemy : MonoBehaviour
 			// Switch back to Patrol state or some other state
 			TransitionToState(new PatrolState());
 		}
+	}
+
+	public Vector3 LastKnownPlayerPosition
+	{
+		get { return lastKnownPlayerPosition; }
+		set { lastKnownPlayerPosition = value; }
+	}
+
+	public bool IsPlayerWithinChaseLimit(Vector3 playerPosition, float limit)
+	{
+		return Vector3.Distance(transform.position, playerPosition) < limit;
 	}
 
 	// Check for detection

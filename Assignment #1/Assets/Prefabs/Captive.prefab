@@ -209,13 +209,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 680e336634fe76045829a70c91481414, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followDistance: 2
+  thirdPersonController: {fileID: 0}
   playerInteraction: {fileID: 0}
-  maxFollowDistance: 8
-  timeToLoseSight: 6
-  interactionZone: {fileID: 6981554976237635523}
   interactionCanvasGroup: {fileID: 1367105107916557044}
   interactionText: {fileID: 7711897439991346876}
+  interactionZone: {fileID: 6981554976237635523}
+  followDistance: 1.5
+  maxFollowDistance: 20
+  timeToLoseSight: 10
 --- !u!54 &5901211222943247352
 Rigidbody:
   m_ObjectHideFlags: 0
