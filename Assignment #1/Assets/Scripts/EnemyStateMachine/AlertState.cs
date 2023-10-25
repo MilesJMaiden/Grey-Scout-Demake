@@ -4,38 +4,30 @@ using UnityEngine.AI;
 public class AlertState : IEnemyState
 {
 	private Enemy enemy;
-	private NavMeshAgent navAgent;
-
-	[Header("Alert Settings")]
-	[Tooltip("Time in seconds the enemy stays alert after losing sight of the player.")]
-	public float alertDuration = 5f;
-
-	[Tooltip("Speed at which the enemy moves when alert.")]
-	public float alertSpeed = 4f;
 
 	private float alertTimer;
 
-	public AlertState(Enemy enemy, NavMeshAgent navAgent)
+	public AlertState(Enemy enemyContext)
 	{
-		this.enemy = enemy;
-		this.navAgent = navAgent;
+		this.enemy = enemyContext;
+		alertTimer = enemy.investigateDuration; // use the investigateDuration from Enemy class
 	}
 
 	public void EnterState(Enemy enemyContext)
 	{
-		this.enemy = enemyContext;
-		alertTimer = alertDuration;
-		navAgent.speed = alertSpeed;
-		// Set any other initial values or behaviors for when the enemy becomes alert.
+		// Assigning alert speed
+		enemy.navAgent.speed = enemy.alertSpeed;
+
+		// Setting the destination to the last known player position
+		enemy.navAgent.SetDestination(enemy.LastKnownPlayerPosition);
 	}
 
 	public void UpdateState(Enemy enemyContext)
 	{
-		this.enemy = enemyContext;
 		alertTimer -= Time.deltaTime;
 
-		// If the player is within the chase limit and not hidden, chase the player
-		if (enemy.IsPlayerDetected() && enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
+		// Only check if the player is within the chase limit
+		if (enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
 		{
 			enemy.TransitionToState(new ChaseState());
 		}
@@ -47,16 +39,11 @@ public class AlertState : IEnemyState
 
 	public void ExitState(Enemy enemyContext)
 	{
-		this.enemy = enemyContext;
-		navAgent.speed = enemy.patrolSpeed;
-		// Handle other behaviors to reset when exiting the alert state.
+		enemy.navAgent.speed = enemy.patrolSpeed;
 	}
 
 	private void ToPatrolState()
 	{
 		enemy.TransitionToState(new PatrolState());
 	}
-
-
-	// You can add more transitions to other states if necessary.
 }

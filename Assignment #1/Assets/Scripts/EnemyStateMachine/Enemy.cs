@@ -48,6 +48,7 @@ public class Enemy : MonoBehaviour
 	public float lookAroundDuration = 5f; // Duration for which the enemy will look around
 	public float investigateDuration = 5f; // Duration the enemy will investigate the last known player position
 	private Vector3 lastKnownPlayerPosition;
+	public float alertSpeed = 5f;
 
 	private void Start()
 	{
@@ -114,11 +115,11 @@ public class Enemy : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		Debug.Log("Trigger Entered by: " + other.gameObject.name);
+		//Debug.Log("Trigger Entered by: " + other.gameObject.name);
 		if (other.gameObject == player)
 		{
 			isPlayerDetected = true;
-			TransitionToState(new AlertState(this, navAgent));  // adjusted based on previous suggestions
+			this.TransitionToState(new AlertState(this));
 		}
 	}
 

@@ -37,7 +37,7 @@ public class ChaseState : IEnemyState
 				enemy.LastKnownPlayerPosition = enemy.player.transform.position;
 
 				// Transition the enemy to the alert state to investigate the last known position.
-				enemy.TransitionToState(new AlertState(enemy, enemy.GetComponent<NavMeshAgent>()));
+				enemy.TransitionToState(new AlertState(enemy));
 			}
 			else if (chaseTimer <= 0 || !enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
 			{

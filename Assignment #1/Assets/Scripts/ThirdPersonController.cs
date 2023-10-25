@@ -118,8 +118,6 @@ public class ThirdPersonController : MonoBehaviour
 
     public PlayerInteraction playerInteraction;
 
-	public bool IsHidden { get; private set; }
-
 	// ----------------------- PLAYER UI SETTINGS -----------------------
 	[Header("Player UI")]
     [SerializeField] private CanvasGroup staminaUICanvasGroup;  // Drag the CanvasGroup from StaminaUIContainer to this field in the Inspector
@@ -153,6 +151,8 @@ public class ThirdPersonController : MonoBehaviour
 
 	[Tooltip("Reference to the SphereCollider that manages player detection range.")]
 	[SerializeField] private SphereCollider detectionCollider;
+
+	public bool IsHidden;
 
 	void Awake()
 	{
