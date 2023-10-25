@@ -46,15 +46,15 @@ public class Enemy : MonoBehaviour
 
 	private void Update()
 	{
-		currentState.UpdateState(this);
+		CurrentState.UpdateState(this);
 	}
 
-	public void TransitionToState(IEnemyState newState)
-	{
-		currentState?.ExitState(this);
-		currentState = newState;
-		currentState.EnterState(this);
-	}
+	//public void TransitionToState(IEnemyState newState)
+	//{
+	//	currentState?.ExitState(this);
+	//	currentState = newState;
+	//	currentState.EnterState(this);
+	//}
 
 	public void Initialize()
 	{
@@ -107,7 +107,7 @@ public class Enemy : MonoBehaviour
 		{
 			isPlayerDetected = true;
 			// Switch to Alert or Chase state
-			TransitionToState(new AlertState());  // You'll need to implement this state
+			TransitionToState(new AlertState(this, navAgent));
 		}
 	}
 
