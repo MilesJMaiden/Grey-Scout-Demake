@@ -4,15 +4,17 @@ public class LookAroundState : IEnemyState
 {
 	private Enemy enemy;
 	private float lookAroundTimer;
-	private float rotationSpeed = 60f; // This can be adjusted or randomized for variation
-	private bool isLookingLeft; // This will determine the direction of the rotation
+	private float rotationSpeed = 60f;
+	private bool isLookingLeft;
+	private Quaternion initialRotation; // Store the initial rotation for restoring later
 
 	public void EnterState(Enemy enemyContext)
 	{
 		this.enemy = enemyContext;
 		lookAroundTimer = enemy.lookAroundDuration;
+		initialRotation = enemy.transform.rotation; // Capture the initial rotation
 
-		// Decide initial looking direction
+		// Randomly decide the initial direction of looking
 		isLookingLeft = (UnityEngine.Random.value > 0.5f);
 	}
 
@@ -21,7 +23,7 @@ public class LookAroundState : IEnemyState
 		this.enemy = enemyContext;
 		lookAroundTimer -= Time.deltaTime;
 
-		// Rotate the enemy to simulate looking around
+		// Rotate the enemy to mimic the behavior of looking around
 		float rotationAmount = Time.deltaTime * rotationSpeed;
 		if (isLookingLeft)
 		{
@@ -29,13 +31,13 @@ public class LookAroundState : IEnemyState
 		}
 		enemy.transform.Rotate(0, rotationAmount, 0);
 
-		// If half the time has passed, switch the look direction
+		// Switch the looking direction after half the duration has passed
 		if (lookAroundTimer <= enemy.lookAroundDuration * 0.5f)
 		{
 			isLookingLeft = !isLookingLeft;
 		}
 
-		// Check if the look around time has elapsed
+		// Transition back to patrol state once the look around duration is over
 		if (lookAroundTimer <= 0)
 		{
 			TransitionToPatrolState();
@@ -45,8 +47,8 @@ public class LookAroundState : IEnemyState
 	public void ExitState(Enemy enemyContext)
 	{
 		this.enemy = enemyContext;
-		// Any logic that needs to be executed once we exit the LookAroundState, like resetting the rotation or other attributes.
-		enemy.transform.rotation = Quaternion.identity; // Resets the rotation
+		// Restore the enemy's rotation to what it was when the LookAroundState was entered
+		enemy.transform.rotation = initialRotation;
 	}
 
 	private void TransitionToPatrolState()

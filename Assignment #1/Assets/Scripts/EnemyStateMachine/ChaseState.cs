@@ -8,54 +8,58 @@ public class ChaseState : IEnemyState
 
 	public void EnterState(Enemy enemyContext)
 	{
+		Debug.Log("Entering Chase State");
 		this.enemy = enemyContext;
-		chaseTimer = enemy.chaseDuration;
+		chaseTimer = enemy.maxChaseTime; // Setting it to the maximum time allowed for chasing
 		enemy.navAgent.speed = enemy.chaseSpeed;
-
-		// Set destination to player's position
-		enemy.navAgent.SetDestination(enemy.player.transform.position);
 	}
 
 	public void UpdateState(Enemy enemyContext)
 	{
-		// Assigning the passed enemy context to the local enemy reference.
 		this.enemy = enemyContext;
-
-		// Decreasing the chase timer as time progresses.
 		chaseTimer -= Time.deltaTime;
 
-		// Attempting to get the 'Player' script from the enemy's target player game object.
 		ThirdPersonController thirdPersonController = enemy.player.GetComponent<ThirdPersonController>();
-
-		// First, we need to make sure that the 'Player' script was fetched successfully.
 		if (thirdPersonController != null)
 		{
-			// Checking if the player is hidden.
-			if (thirdPersonController.IsHidden)
+			if (thirdPersonController.IsHidden || chaseTimer <= 0 || !enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
 			{
-				// If the player is hidden, store their last known position.
-				enemy.LastKnownPlayerPosition = enemy.player.transform.position;
-
-				// Transition the enemy to the alert state to investigate the last known position.
-				enemy.TransitionToState(new AlertState(enemy));
-			}
-			else if (chaseTimer <= 0 || !enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
-			{
-				// If the chase timer has run out OR the player is outside of the chase limit,
-				// Transition the enemy to the look around state.
+				// Either the player is hidden, the chase time has expired, or the player is out of chase limit
+				Debug.Log("Transitioning to LookAroundState for some reason");
 				enemy.TransitionToState(new LookAroundState());
+			}
+			else
+			{
+				Debug.Log("Chasing Player");
+				FacePlayer();  // Make the enemy face the player
+				enemy.navAgent.SetDestination(enemy.player.transform.position);
+
+				// Check if NavMeshAgent is having pathfinding issues
+				if (enemy.navAgent.pathStatus == NavMeshPathStatus.PathPartial || enemy.navAgent.pathStatus == NavMeshPathStatus.PathInvalid)
+				{
+					Debug.LogError("NavMeshAgent is having pathfinding issues");
+				}
 			}
 		}
 		else
 		{
-			// This is a safeguard. If for some reason the 'Player' script is not found on the enemy's player game object,
-			// you might want to log an error or handle this case differently.
 			Debug.LogError("Player script not found on the enemy's target player.");
 		}
+	}
+
+	private void FacePlayer()
+	{
+		Vector3 directionToPlayer = enemy.player.transform.position - enemy.transform.position;
+		directionToPlayer.y = 0; // Ensure rotation only around the y-axis
+		Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+		enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, lookRotation, Time.deltaTime * 5f);
 	}
 
 	public void ExitState(Enemy enemyContext)
 	{
 		this.enemy = enemyContext;
+		// Reset properties or states if necessary.
 	}
+
+
 }
