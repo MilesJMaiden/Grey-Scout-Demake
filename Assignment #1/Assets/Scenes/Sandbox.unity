@@ -1440,21 +1440,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2012523786527681418, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4608264458774484831, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4757992256910542713, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 5394431295042706528, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1505,56 +1490,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5472047980968912359, guid: 41996fc3498cba94e94fd4623f169f6f,
+    - target: {fileID: 5510671401133097272, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
-      propertyPath: m_Layer
-      value: 5
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6100558436579071907, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6331662985602139279, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7718469567999207966, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7742980648208583277, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 7827361852488659942, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
       propertyPath: m_Name
       value: Enemy
-      objectReference: {fileID: 0}
-    - target: {fileID: 8060884143598369024, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: m_Layer
-      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8068582074042508533, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 691097915}
-    - target: {fileID: 8068582074042508533, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: chaseLimit
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 8068582074042508533, guid: 41996fc3498cba94e94fd4623f169f6f,
-        type: 3}
-      propertyPath: chaseSpeed
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -5,15 +5,19 @@ public class PatrolState : IEnemyState
 		enemy.Initialize();
 	}
 
-	public void UpdateState(Enemy enemy)
-	{
-		enemy.Patrol();
-		// Logic to transition to other states like Alert or Chase can be added here
-	}
+    public void UpdateState(Enemy enemy)
+    {
+        enemy.PatrolRandomlyWithinRadius();
 
-	public void ExitState(Enemy enemy)
+        if (enemy.IsPlayerDetected())
+        {
+            enemy.TransitionToState(new AlertState(enemy));
+        }
+    }
+
+    public void ExitState(Enemy enemy)
 	{
 		// Logic for when exiting the patrol state, e.g. stopping the NavMeshAgent
-		enemy.navAgent.isStopped = true;
+		//enemy.navAgent.isStopped = true;
 	}
 }

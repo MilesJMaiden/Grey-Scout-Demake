@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 488970183811241340}
   - component: {fileID: 7716668464446940678}
   - component: {fileID: 4542237210014010949}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: alert_UI_label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -198,7 +198,7 @@ GameObject:
   - component: {fileID: 726889031990345527}
   - component: {fileID: 1151639260967922177}
   - component: {fileID: 6530281520888149205}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: enemy_UI_label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -332,7 +332,7 @@ GameObject:
   - component: {fileID: 3874045352122336564}
   - component: {fileID: 2107451097536641738}
   - component: {fileID: 3259493047682978782}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -409,7 +409,7 @@ GameObject:
   - component: {fileID: 7259765275107379905}
   - component: {fileID: 9094812089822542838}
   - component: {fileID: 5951818434359322628}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: enemy_canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -662,7 +662,7 @@ GameObject:
   - component: {fileID: 6100558436579071907}
   - component: {fileID: 5520496972589474271}
   - component: {fileID: 8263357682338495038}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -735,7 +735,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2356607698639614013}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -771,7 +771,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4938929587555511634}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: alert_UI_container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -848,15 +848,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1294d040fc009d748a89f6e56ee0f01c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  patrollingEnabled: 1
   originPoint: {x: 0, y: 0, z: 0}
   patrolRange: 5
   patrolSpeed: 2
   pointA: {x: 0, y: 0, z: 0}
-  pointB: {x: 0, y: 0, z: 0}
+  pointB: {x: 5, y: 0, z: 5}
   currentDestination: {x: 0, y: 0, z: 0}
   navAgent: {fileID: 8139019507428369659}
   player: {fileID: 0}
+  chaseSpeed: 4
+  chaseLimit: 6
+  maxChaseTime: 3
+  alertSpeed: 5
+  alertLookDuration: 5
+  alertMoveDuration: 5
+  lookAroundDuration: 5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  playerDetectionRadius: 8
   isPlayerDetected: 0
+  lastKnownPlayerPosition: {x: 0, y: 0, z: 0}
 --- !u!195 &8139019507428369659
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -916,7 +929,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7465679388277018889}
   - component: {fileID: 6228344278853414827}
-  m_Layer: 9
+  m_Layer: 5
   m_Name: alert_UI_slider
   m_TagString: Untagged
   m_Icon: {fileID: 0}

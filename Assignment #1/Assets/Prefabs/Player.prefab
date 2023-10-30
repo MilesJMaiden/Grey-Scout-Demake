@@ -719,7 +719,7 @@ GameObject:
   - component: {fileID: 8959714947325162565}
   - component: {fileID: 521337334615650104}
   - component: {fileID: 7751093801591114581}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -915,10 +915,11 @@ MonoBehaviour:
   delayBeforeFade: 1
   staminaSlider: {fileID: 1403231594019710442}
   captives: []
-  walkDetectionRadius: 1
-  sprintDetectionRadius: 2
-  crouchDetectionRadius: 0.5
+  walkDetectionRadius: 2
+  sprintDetectionRadius: 3
+  crouchDetectionRadius: 1
   detectionCollider: {fileID: 1910821159979517882}
+  IsHidden: 0
 --- !u!114 &521337334615650104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1389,7 +1390,7 @@ Transform:
   m_GameObject: {fileID: 8996775107663497472}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.5, y: 1, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

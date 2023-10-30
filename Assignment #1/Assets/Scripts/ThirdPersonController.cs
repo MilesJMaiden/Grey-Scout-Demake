@@ -138,7 +138,6 @@ public class ThirdPersonController : MonoBehaviour
 
 	// ------------------- PLAYER DETECTION SETTINGS --------------------
 	[Header("Detection Settings")]
-	[Header("Detection Settings")]
 
 	[Tooltip("Detection radius when the player is walking.")]
 	public float walkDetectionRadius = 1f;

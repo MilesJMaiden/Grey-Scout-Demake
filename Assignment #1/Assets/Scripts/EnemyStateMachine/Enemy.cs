@@ -1,133 +1,128 @@
 using UnityEngine.AI;
 using UnityEngine;
+using System.Security.Cryptography.X509Certificates;
+using static UnityEditor.FilePathAttribute;
+using static UnityEngine.UI.Image;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
+using System.Drawing;
+using Unity.VisualScripting;
+using Color = UnityEngine.Color;
 
 public class Enemy : MonoBehaviour
 {
-	public IEnemyState CurrentState { get; private set; }
+	public IEnemyState CurrentState;
 
-	[Header("Patrol Settings")]
-	[Tooltip("Origin point from which the enemy patrols.")]
-	public Vector3 originPoint;
+    [Header("Patrol Settings")]
+    public bool patrollingEnabled = true;
+    public Vector3 originPoint;
+    public float patrolRange = 5f;
+    public float patrolSpeed = 2f;
 
-	[Tooltip("Distance from the origin point the enemy can move while patrolling.")]
-	public float patrolRange = 5f;
+    [Header("Internal Logic - Do Not Modify in Inspector")]
+    [SerializeField]
+    public Vector3 pointA;
+    [SerializeField]
+    public Vector3 pointB;
+    [SerializeField]
+    public Vector3 currentDestination;
+    [SerializeField]
+    public NavMeshAgent navAgent;
+    [SerializeField]
+    public GameObject player;
 
-	[Tooltip("Speed at which the enemy moves while patrolling.")]
-	public float patrolSpeed = 2f;
+    [Header("Chase Settings")]
+    [SerializeField]
+    public float chaseSpeed;
+    [SerializeField]
+    public float chaseLimit;
+    [SerializeField]
+    public float maxChaseTime = 5f;
 
-	[Header("Internal Logic - Do Not Modify in Inspector")]
-	[Tooltip("First patrol point.")]
+    [Header("Alert Settings")]
+    [SerializeField]
+    public float alertSpeed = 5f;
+    [SerializeField]
+    public float alertLookDuration = 5f;
+    [SerializeField]
+    public float alertMoveDuration = 5f;
+
+	[Header("LookAround Settings")]
 	[SerializeField]
-	private Vector3 pointA;
+    public float lookAroundDuration = 5f;
 
-	[Tooltip("Second patrol point.")]
-	[SerializeField]
-	private Vector3 pointB;
+    [Header("Detection Settings")]
+    public LayerMask playerLayer;
+    [SerializeField]
+    public float playerDetectionRadius = 10f;
 
-	[Tooltip("The enemy's current patrol destination.")]
-	[SerializeField]
-	private Vector3 currentDestination;
+    public bool isPlayerDetected;
 
-	[Tooltip("Reference to the enemy's NavMeshAgent.")]
-	[SerializeField]
-	public NavMeshAgent navAgent;
+    public Vector3 lastKnownPlayerPosition;
+    private void Start()
+    {
+        Initialize();
+        TransitionToState(new PatrolState());
 
-	[SerializeField]
-	public GameObject player;
+    }
 
-	[SerializeField]
-	public float chaseSpeed;
+    private void Update()
+    {
+        CurrentState.UpdateState(this);
+        CheckForDetection();
+    }
 
-	[SerializeField]
-	public float chaseLimit;
-
-	[SerializeField]
-	private bool isPlayerDetected = false;
-
-	public float chaseDuration = 10f; // Duration for which the enemy will chase before looking around
-	public float lookAroundDuration = 5f; // Duration for which the enemy will look around
-	public float investigateDuration = 5f; // Duration the enemy will investigate the last known player position
-	private Vector3 lastKnownPlayerPosition;
-	public float alertSpeed = 5f;
-	public float alertLookDuration = 5f;
-	public float alertMoveDuration = 5f;
-	public float maxChaseTime = 5f;
-
-	private void Start()
-	{
-		Initialize();
-		TransitionToState(new PatrolState());
-	}
-
-	private void Update()
-	{
-		CurrentState.UpdateState(this);
-	}
-
-	public void Initialize()
+    public void Initialize()
 	{
 		SetupNavAgent();
-		CalculatePatrolPoints();
-		SetInitialPatrolDestination();
-	}
+        SetInitialPatrolDestination();
+    }
+    private void SetupNavAgent()
+    {
+        navAgent = GetComponent<NavMeshAgent>();
+        if (patrollingEnabled)
+        {
+            navAgent.speed = patrolSpeed;
+        }
+        else
+        {
+            navAgent.speed = 0f; // Set to default or another value if not patrolling.
+        }
+    }
 
-	private void SetupNavAgent()
-	{
-		navAgent = GetComponent<NavMeshAgent>();
-		navAgent.speed = patrolSpeed;
-	}
+    //Gets a random direction.
+    //Multiplies it by the patrol range to ensure the point is within the desired distance.
+    //Adds the origin point to offset this point based on the enemy's starting location.
+    //Uses the NavMesh to ensure the randomly chosen point is a valid location the enemy can walk to.
+    private void SetRandomPatrolDestination()
+    {
+        Vector3 randomDirection = Random.insideUnitSphere * patrolRange;
+        randomDirection += originPoint;
+        NavMeshHit hit;
+        NavMesh.SamplePosition(randomDirection, out hit, patrolRange, 1);
+        currentDestination = hit.position;
+        navAgent.SetDestination(currentDestination);
 
-	public void Patrol()
-	{
-		// If the enemy reaches the current destination, switch the destination
-		if (IsAtDestination())
-		{
-			SwitchPatrolPoint();
-		}
-	}
+        Debug.Log("Setting patrol destination to: " + currentDestination);
+        navAgent.SetDestination(currentDestination);
+    }
+    private bool IsAtDestination()
+    {
+        return navAgent.remainingDistance < 0.5f;
+    }
 
-	private void CalculatePatrolPoints()
-	{
-		pointA = originPoint + new Vector3(patrolRange, 0, 0);
-		pointB = originPoint - new Vector3(patrolRange, 0, 0);
-	}
 
-	private void SetInitialPatrolDestination()
+    public void PatrolRandomlyWithinRadius()
+    {
+        if (IsAtDestination())
+        {
+            SetRandomPatrolDestination();
+        }
+    }
+
+    private void SetInitialPatrolDestination()
 	{
 		currentDestination = pointA;
 		navAgent.SetDestination(currentDestination);
-	}
-
-	private bool IsAtDestination()
-	{
-		return Vector3.Distance(transform.position, currentDestination) < 0.5f;
-	}
-
-	private void SwitchPatrolPoint()
-	{
-		currentDestination = (currentDestination == pointA) ? pointB : pointA;
-		navAgent.SetDestination(currentDestination);
-	}
-
-	private void OnTriggerEnter(Collider other)
-	{
-		if (other.gameObject == player)
-		{
-			Debug.Log("Player detected.");
-			isPlayerDetected = true;
-			LastKnownPlayerPosition = player.transform.position;
-			this.TransitionToState(new AlertState(this));
-		}
-	}
-
-	private void OnTriggerExit(Collider other)
-	{
-		if (other.gameObject == player)
-		{
-			isPlayerDetected = false;
-			// Switch back to Patrol state or some other state
-			TransitionToState(new PatrolState());
-		}
 	}
 
 	public Vector3 LastKnownPlayerPosition
@@ -136,18 +131,68 @@ public class Enemy : MonoBehaviour
 		set { lastKnownPlayerPosition = value; }
 	}
 
-	public bool IsPlayerWithinChaseLimit(Vector3 playerPosition, float limit)
+    public void ReturnToOrigin()
+    {
+        navAgent.isStopped = false;
+        navAgent.SetDestination(originPoint);
+    }
+
+    public bool IsPlayerWithinChaseLimit(Vector3 playerPosition, float limit)
 	{
 		return Vector3.Distance(transform.position, playerPosition) < limit;
 	}
 
-	// Check for detection
-	public bool IsPlayerDetected()
-	{
-		return isPlayerDetected;
-	}
+    // Check for detection
+    public bool IsPlayerDetected()
+    {
+        // New logic: Use Physics to check if player is in vicinity and line of sight
+        Collider[] hits = Physics.OverlapSphere(transform.position, playerDetectionRadius, playerLayer);
+        foreach (var hit in hits)
+        {
+            if (hit.gameObject == player)
+            {
+                LastKnownPlayerPosition = player.transform.position;
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public void TransitionToState(IEnemyState newState)
+    private void CheckForDetection()
+    {
+        // Logic to check for player detection
+        if (IsPlayerDetected())
+        {
+            LastKnownPlayerPosition = player.transform.position;
+        }
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HideZone"))
+        {
+            NavMeshAgent agent = GetComponent<NavMeshAgent>();
+            if (agent != null && agent.enabled)
+            {
+                agent.isStopped = false; // Ensure the agent continues moving
+            }
+        }
+    }
+
+    // If the hide zone isn't a trigger, use OnCollisionEnter:
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("HideZone"))
+        {
+            NavMeshAgent agent = GetComponent<NavMeshAgent>();
+            if (agent != null && agent.enabled)
+            {
+                agent.isStopped = false; // Ensure the agent continues moving
+            }
+        }
+    }
+
+    public void TransitionToState(IEnemyState newState)
 	{
 		if (CurrentState != null)
 			CurrentState.ExitState(this);
@@ -155,4 +200,10 @@ public class Enemy : MonoBehaviour
 		CurrentState = newState;
 		CurrentState.EnterState(this);
 	}
+
+    void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red; // Set the color of the gizmo. You can change this to your preference.
+        Gizmos.DrawWireSphere(transform.position, playerDetectionRadius);
+    }
 }

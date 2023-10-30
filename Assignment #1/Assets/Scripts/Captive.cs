@@ -128,7 +128,7 @@ public class Captive : MonoBehaviour
 		Following
 	}
 
-	private CaptiveState currentState = CaptiveState.Idle;
+	//private CaptiveState currentState = CaptiveState.Idle;
 
 	private IEnumerator SightAndDistanceChecks()
 	{
