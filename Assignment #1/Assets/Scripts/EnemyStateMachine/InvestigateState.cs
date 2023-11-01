@@ -48,10 +48,4 @@ public class InvestigateState : IEnemyState
 		// Restore the enemy's rotation to what it was when the LookAroundState was entered
 		enemy.transform.rotation = initialRotation;
 	}
-
-    private void TransitionToPatrolState()
-    {
-        enemy.TransitionToState(new PatrolState());
-        enemy.ReturnToOrigin(); // Added ReturnToOrigin() here
-    }
 }
