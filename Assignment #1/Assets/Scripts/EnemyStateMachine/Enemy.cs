@@ -147,7 +147,6 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.CompareTag("PlayerDetectionCollider"))
         {
             ThirdPersonController thirdPersonController = other.GetComponentInParent<ThirdPersonController>();
-
             if (thirdPersonController != null)
             {
                 if (!thirdPersonController.IsHidden)
@@ -156,7 +155,7 @@ public class Enemy : MonoBehaviour
                 }
                 else
                 {
-                    alertTimer = 0f; // Reset the timer as the player is in detection range
+                    alertTimer = alertThreshold; // Start the timer as the player is in detection range
                     FacePlayerDirection(other.gameObject);
                 }
             }
@@ -168,28 +167,21 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.CompareTag("PlayerDetectionCollider"))
         {
             ThirdPersonController thirdPersonController = other.GetComponentInParent<ThirdPersonController>();
-
             if (thirdPersonController != null)
             {
-                if (CurrentState is ChaseState) // If the current state is ChaseState
-                {
-                    // Keep chasing the player even if the player is hidden
-                    TransitionToState(new ChaseState());
-                    alertTimer = 0f; // Reset the timer
-                }
-                else if (!thirdPersonController.IsHidden)
+                if (!thirdPersonController.IsHidden)
                 {
                     TransitionToState(new ChaseState());
-                    alertTimer = 0f; // Reset the timer
+                    alertTimer = 0f; // Reset the timer as the player is detected and not hidden
                 }
-                else if (thirdPersonController.IsHidden)
+                else
                 {
-                    alertTimer += Time.deltaTime;
+                    alertTimer -= Time.deltaTime; // Decrease the timer as the hidden player is in detection range
 
-                    if (alertTimer >= alertThreshold)
+                    if (alertTimer <= 0)
                     {
                         TransitionToState(new ChaseState());
-                        alertTimer = 0f;
+                        alertTimer = 0f; // Reset the timer after transitioning to ChaseState
                     }
                 }
             }
@@ -201,13 +193,8 @@ public class Enemy : MonoBehaviour
         if (other.gameObject.CompareTag("PlayerDetectionCollider"))
         {
             Debug.Log("Player lost.");
-
-            if (!(CurrentState is ChaseState)) // Check if the current state is not ChaseState
-            {
-                isPlayerDetected = false;  // Reset the flag when the player is lost
-                alertTimer = 0f; // Reset the timer
-                TransitionToState(new PatrolState());
-            }
+            alertTimer = 0f; // Reset the timer as the player is out of detection range
+            TransitionToState(new PatrolState());
         }
     }
 
