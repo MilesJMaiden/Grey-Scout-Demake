@@ -2,7 +2,8 @@ public class PatrolState : IEnemyState
 {
 	public void EnterState(Enemy enemy)
 	{
-		enemy.Initialize();
+        enemy.playerDetectionRadius = enemy.originalDetectionRadius;
+        enemy.Initialize();
 	}
 
     public void UpdateState(Enemy enemy)

@@ -4,8 +4,8 @@ using UnityEngine.AI;
 public class AlertState : IEnemyState
 {
     private Enemy enemy;
-    private float alertLookTimer;
-    private float alertMoveTimer;
+    private float alertTimer;
+    private float alertThreshold = 5f; // Time in seconds until the enemy starts chasing the player
 
     private enum AlertPhase { Looking, Moving }
     private AlertPhase currentPhase;
@@ -13,8 +13,6 @@ public class AlertState : IEnemyState
     public AlertState(Enemy enemyContext)
     {
         this.enemy = enemyContext;
-        alertLookTimer = enemy.alertLookDuration;
-        alertMoveTimer = enemy.alertMoveDuration;
         currentPhase = AlertPhase.Looking;
     }
 
@@ -22,50 +20,42 @@ public class AlertState : IEnemyState
     {
         Debug.Log("Entering Alert State");
         enemy.navAgent.speed = enemy.alertSpeed;
-        FacePlayer();
+        alertTimer = 0f; // Reset the alert timer
     }
 
     public void UpdateState(Enemy enemyContext)
     {
-        switch (currentPhase)
-        {
-            case AlertPhase.Looking:
-                alertLookTimer -= Time.deltaTime;
-                if (alertLookTimer <= 0)
-                {
-                    Debug.Log("Transitioning from Looking to Moving");
-                    currentPhase = AlertPhase.Moving;
-                    enemy.navAgent.SetDestination(enemy.LastKnownPlayerPosition);
-                }
-                break;
-
-            case AlertPhase.Moving:
-                if (!enemy.navAgent.pathPending && HasReachedDestination())
-                {
-                    Debug.Log("Reached Last Known Player Position");
-                    CheckForChaseOrResumePatrol();
-                }
-                else
-                {
-                    Debug.Log("Still moving. Remaining distance: " + enemy.navAgent.remainingDistance);
-                }
-                break;
-        }
+        this.enemy = enemyContext;
 
         ThirdPersonController thirdPersonController = enemy.player.GetComponent<ThirdPersonController>();
-        if (thirdPersonController != null)
+        if (thirdPersonController != null && thirdPersonController.IsHidden && enemy.IsPlayerDetected())
         {
-            if (!thirdPersonController.IsHidden && enemy.IsPlayerDetected())
+            alertTimer += Time.deltaTime;
+            if (alertTimer >= alertThreshold)
             {
                 enemy.TransitionToState(new ChaseState());
                 return;
             }
         }
-    }
+        else
+        {
+            alertTimer = 0f; // Reset the timer if the player is not hidden
+        }
 
-    public void ExitState(Enemy enemyContext)
-    {
-        // Reset any properties or states if necessary.
+        switch (currentPhase)
+        {
+            case AlertPhase.Looking:
+                currentPhase = AlertPhase.Moving;
+
+                break;
+
+            case AlertPhase.Moving:
+                if (!enemy.navAgent.pathPending && HasReachedDestination())
+                {
+                    enemy.TransitionToState(new PatrolState());
+                }
+                break;
+        }
     }
 
     private bool HasReachedDestination()
@@ -83,29 +73,14 @@ public class AlertState : IEnemyState
         return false;
     }
 
-    private void FacePlayer()
+    public void ExitState(Enemy enemyContext)
     {
-        Vector3 directionToPlayer = enemy.player.transform.position - enemy.transform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
-        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, lookRotation, Time.deltaTime * 5f);
+        this.enemy = enemyContext;
+        // Reset any properties or states if necessary.
+        alertTimer = 0f; // Reset the alert timer when exiting the state
     }
 
-    private void CheckForChaseOrResumePatrol()
-    {
-        ThirdPersonController thirdPersonController = enemy.player.GetComponent<ThirdPersonController>();
-        if (thirdPersonController != null)
-        {
-            if (!thirdPersonController.IsHidden && enemy.IsPlayerDetected())
-            {
-                enemy.TransitionToState(new ChaseState());
-            }
-            else
-            {
-                TransitionToPatrolState();
-            }
-        }
-    }
-    private void TransitionToPatrolState()
+    public void TransitionToPatrolState()
     {
         enemy.TransitionToState(new PatrolState());
     }

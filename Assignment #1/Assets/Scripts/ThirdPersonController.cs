@@ -113,8 +113,7 @@ public class ThirdPersonController : MonoBehaviour
 	private bool isSprinting = false;
 	[Tooltip("UI slider that represents player's stamina.")]
 	private bool wasSprintingWhenJumped = false;
-
-	private bool canSprint = true;
+    private bool canSprint = true;
 
     public PlayerInteraction playerInteraction;
 
@@ -151,7 +150,12 @@ public class ThirdPersonController : MonoBehaviour
 	[Tooltip("Reference to the SphereCollider that manages player detection range.")]
 	[SerializeField] private SphereCollider detectionCollider;
 
-	public bool IsHidden;
+    // ----------------------- GIZMO SETTINGS -----------------------
+    [Header("Gizmo Settings")]
+    public bool showDetectionRadiusGizmo = true;  // Flag to toggle the gizmo on/off
+    public Color gizmoColor = Color.red;  // Color of the gizmo
+
+    public bool IsHidden;
 
 	void Awake()
 	{
@@ -656,23 +660,39 @@ public class ThirdPersonController : MonoBehaviour
 		return closestCaptive;
 	}
 
-	private void AdjustDetectionCollider()
-	{
-		if (isSprinting)  // You need to define this logic based on your movement script
-		{
-			detectionCollider.radius = sprintDetectionRadius;
-		}
-		else if (isCrouching)  // You need to define this logic
-		{
-			detectionCollider.radius = crouchDetectionRadius;
-		}
-		else
-		{
-			detectionCollider.radius = walkDetectionRadius;
-		}
-	}
+    private void AdjustDetectionCollider()
+    {
+        if (IsHidden && isCrouching)
+        {
+            detectionCollider.radius = 0.3f;
+        }
 
-	private void OnTriggerEnter(Collider other)
+		else if (IsHidden && isSprinting)
+		{
+            detectionCollider.radius = 0.9f;
+        }
+
+        else if (!IsHidden && isCrouching)
+        {
+            detectionCollider.radius = crouchDetectionRadius;
+        }
+
+        else if (!IsHidden && isSprinting)
+        {
+          
+			detectionCollider.radius = sprintDetectionRadius;
+        }
+        else if (IsHidden && !isSprinting && !isCrouching)
+		{
+            detectionCollider.radius = .6f;
+        }
+        else
+        {
+            detectionCollider.radius = walkDetectionRadius;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("HideZone"))
 		{
@@ -687,4 +707,13 @@ public class ThirdPersonController : MonoBehaviour
 			IsHidden = false;
 		}
 	}
+
+    private void OnDrawGizmos()
+    {
+        if (showDetectionRadiusGizmo && detectionCollider != null)
+        {
+            Gizmos.color = gizmoColor;
+            Gizmos.DrawWireSphere(transform.position + new Vector3(0, 1, 0), detectionCollider.radius);
+        }
+    }
 }

@@ -851,7 +851,7 @@ MonoBehaviour:
   patrollingEnabled: 1
   originPoint: {x: 0, y: 0, z: 0}
   patrolRange: 5
-  patrolSpeed: 2
+  patrolSpeed: 1
   pointA: {x: 0, y: 0, z: 0}
   pointB: {x: 5, y: 0, z: 5}
   currentDestination: {x: 0, y: 0, z: 0}
@@ -864,10 +864,13 @@ MonoBehaviour:
   alertLookDuration: 5
   alertMoveDuration: 5
   lookAroundDuration: 5
+  detectionCollider: {fileID: 5349669365485656760}
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
   playerDetectionRadius: 8
+  chaseDetectionRadius: 12
+  originalDetectionRadius: 8
   isPlayerDetected: 0
   lastKnownPlayerPosition: {x: 0, y: 0, z: 0}
 --- !u!195 &8139019507428369659

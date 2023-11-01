@@ -51,24 +51,37 @@ public class Enemy : MonoBehaviour
     public float lookAroundDuration = 5f;
 
     [Header("Detection Settings")]
+    public SphereCollider detectionCollider;
     public LayerMask playerLayer;
     [SerializeField]
     public float playerDetectionRadius = 10f;
+    public float chaseDetectionRadius = 20f;
+    public float originalDetectionRadius;
 
     public bool isPlayerDetected;
 
-    public Vector3 lastKnownPlayerPosition;
+    private float alertTimer = 0f;
+    private float alertThreshold = 5f; // Time in seconds to wait before starting to chase
+
     private void Start()
     {
         Initialize();
         TransitionToState(new PatrolState());
-
     }
 
     private void Update()
     {
         CurrentState.UpdateState(this);
-        CheckForDetection();
+
+
+        if (alertTimer > 0)
+        {
+            alertTimer -= Time.deltaTime;
+            if (alertTimer <= 0)
+            {
+                TransitionToState(new PatrolState());
+            }
+        }
     }
 
     public void Initialize()
@@ -89,6 +102,11 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public bool IsPlayerDetected()
+    {
+        return isPlayerDetected;
+    }
+
     //Gets a random direction.
     //Multiplies it by the patrol range to ensure the point is within the desired distance.
     //Adds the origin point to offset this point based on the enemy's starting location.
@@ -102,7 +120,7 @@ public class Enemy : MonoBehaviour
         currentDestination = hit.position;
         navAgent.SetDestination(currentDestination);
 
-        Debug.Log("Setting patrol destination to: " + currentDestination);
+        //Debug.Log("Setting patrol destination to: " + currentDestination);
         navAgent.SetDestination(currentDestination);
     }
     private bool IsAtDestination()
@@ -125,11 +143,6 @@ public class Enemy : MonoBehaviour
 		navAgent.SetDestination(currentDestination);
 	}
 
-	public Vector3 LastKnownPlayerPosition
-	{
-		get { return lastKnownPlayerPosition; }
-		set { lastKnownPlayerPosition = value; }
-	}
 
     public void ReturnToOrigin()
     {
@@ -142,54 +155,81 @@ public class Enemy : MonoBehaviour
 		return Vector3.Distance(transform.position, playerPosition) < limit;
 	}
 
-    // Check for detection
-    public bool IsPlayerDetected()
+    private void OnTriggerEnter(Collider other)
     {
-        // New logic: Use Physics to check if player is in vicinity and line of sight
-        Collider[] hits = Physics.OverlapSphere(transform.position, playerDetectionRadius, playerLayer);
-        foreach (var hit in hits)
+        if (other.gameObject.CompareTag("PlayerDetectionCollider"))
         {
-            if (hit.gameObject == player)
-            {
-                LastKnownPlayerPosition = player.transform.position;
-                return true;
-            }
-        }
-        return false;
-    }
+            ThirdPersonController thirdPersonController = other.GetComponentInParent<ThirdPersonController>();
 
-    private void CheckForDetection()
-    {
-        // Logic to check for player detection
-        if (IsPlayerDetected())
-        {
-            LastKnownPlayerPosition = player.transform.position;
-        }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("HideZone"))
-        {
-            NavMeshAgent agent = GetComponent<NavMeshAgent>();
-            if (agent != null && agent.enabled)
+            if (thirdPersonController != null)
             {
-                agent.isStopped = false; // Ensure the agent continues moving
+                if (!thirdPersonController.IsHidden)
+                {
+                    TransitionToState(new ChaseState());
+                }
+                else
+                {
+                    alertTimer = 0f; // Reset the timer as the player is in detection range
+                    FacePlayerDirection(other.gameObject);
+                }
             }
         }
     }
 
-    // If the hide zone isn't a trigger, use OnCollisionEnter:
-    void OnCollisionEnter(Collision collision)
+    private void OnTriggerStay(Collider other)
     {
-        if (collision.gameObject.CompareTag("HideZone"))
+        if (other.gameObject.CompareTag("PlayerDetectionCollider"))
         {
-            NavMeshAgent agent = GetComponent<NavMeshAgent>();
-            if (agent != null && agent.enabled)
+            ThirdPersonController thirdPersonController = other.GetComponentInParent<ThirdPersonController>();
+
+            if (thirdPersonController != null)
             {
-                agent.isStopped = false; // Ensure the agent continues moving
+                if (CurrentState is ChaseState) // If the current state is ChaseState
+                {
+                    // Keep chasing the player even if the player is hidden
+                    TransitionToState(new ChaseState());
+                    alertTimer = 0f; // Reset the timer
+                }
+                else if (!thirdPersonController.IsHidden)
+                {
+                    TransitionToState(new ChaseState());
+                    alertTimer = 0f; // Reset the timer
+                }
+                else if (thirdPersonController.IsHidden)
+                {
+                    alertTimer += Time.deltaTime;
+
+                    if (alertTimer >= alertThreshold)
+                    {
+                        TransitionToState(new ChaseState());
+                        alertTimer = 0f;
+                    }
+                }
             }
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("PlayerDetectionCollider"))
+        {
+            Debug.Log("Player lost.");
+
+            if (!(CurrentState is ChaseState)) // Check if the current state is not ChaseState
+            {
+                isPlayerDetected = false;  // Reset the flag when the player is lost
+                alertTimer = 0f; // Reset the timer
+                TransitionToState(new PatrolState());
+            }
+        }
+    }
+
+    private void FacePlayerDirection(GameObject playerObject)
+    {
+        Vector3 directionToPlayer = playerObject.transform.position - transform.position;
+        directionToPlayer.y = 0;
+        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 5f);
     }
 
     public void TransitionToState(IEnemyState newState)
@@ -204,6 +244,6 @@ public class Enemy : MonoBehaviour
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red; // Set the color of the gizmo. You can change this to your preference.
-        Gizmos.DrawWireSphere(transform.position, playerDetectionRadius);
+        Gizmos.DrawWireSphere(transform.position + new Vector3(0, 1, 0), detectionCollider.radius);
     }
 }
