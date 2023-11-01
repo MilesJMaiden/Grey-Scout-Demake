@@ -131,10 +131,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1188671632735360116, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316229283930118074, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1649835127097393466, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
       propertyPath: m_Name
       value: Captive (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1649835127097393466, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2050234208578974785, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
@@ -186,6 +201,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3952930211953001139, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5894906856020488799, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
       propertyPath: playerInteraction
@@ -196,6 +216,16 @@ PrefabInstance:
       propertyPath: thirdPersonController
       value: 
       objectReference: {fileID: 691097916}
+    - target: {fileID: 7045153801950160276, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711897439991346876, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -565,10 +595,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1188671632735360116, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316229283930118074, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1649835127097393466, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
       propertyPath: m_Name
       value: Captive (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1649835127097393466, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2050234208578974785, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
@@ -620,6 +665,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3952930211953001139, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5894906856020488799, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
       propertyPath: followDistance
@@ -640,6 +690,16 @@ PrefabInstance:
       propertyPath: thirdPersonController
       value: 
       objectReference: {fileID: 691097916}
+    - target: {fileID: 7045153801950160276, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711897439991346876, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1211,19 +1271,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1910821159979517882, guid: 043a3c41abe8c794ca6c6aad59a48e39,
-        type: 3}
-      propertyPath: m_IsTrigger
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3981239150018524893, guid: 043a3c41abe8c794ca6c6aad59a48e39,
         type: 3}
       propertyPath: m_Name
-      value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 3981239150018524893, guid: 043a3c41abe8c794ca6c6aad59a48e39,
-        type: 3}
-      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4499079075003116795, guid: 043a3c41abe8c794ca6c6aad59a48e39,
@@ -1294,10 +1344,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1188671632735360116, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1316229283930118074, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 1649835127097393466, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
       propertyPath: m_Name
       value: Captive
+      objectReference: {fileID: 0}
+    - target: {fileID: 1649835127097393466, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 2050234208578974785, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
@@ -1349,6 +1414,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3952930211953001139, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5894906856020488799, guid: 9fcbf193d0c85344097c721fc963199f,
         type: 3}
       propertyPath: followDistance
@@ -1369,6 +1439,16 @@ PrefabInstance:
       propertyPath: thirdPersonController
       value: 
       objectReference: {fileID: 691097916}
+    - target: {fileID: 7045153801950160276, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7711897439991346876, guid: 9fcbf193d0c85344097c721fc963199f,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1512,8 +1592,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7827361852488659942, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
-      propertyPath: m_TagString
-      value: PlayerDetectionCollider
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8068582074042508533, guid: 41996fc3498cba94e94fd4623f169f6f,
         type: 3}
