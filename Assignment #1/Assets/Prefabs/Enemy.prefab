@@ -813,7 +813,7 @@ GameObject:
   - component: {fileID: 6367739011241424}
   m_Layer: 9
   m_Name: Enemy
-  m_TagString: Untagged
+  m_TagString: PlayerDetectionCollider
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -872,7 +872,6 @@ MonoBehaviour:
   chaseDetectionRadius: 12
   originalDetectionRadius: 8
   isPlayerDetected: 0
-  lastKnownPlayerPosition: {x: 0, y: 0, z: 0}
 --- !u!195 &8139019507428369659
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -33,10 +33,6 @@ public class Enemy : MonoBehaviour
     [Header("Chase Settings")]
     [SerializeField]
     public float chaseSpeed;
-    [SerializeField]
-    public float chaseLimit;
-    [SerializeField]
-    public float maxChaseTime = 5f;
 
     [Header("Alert Settings")]
     [SerializeField]
@@ -48,11 +44,9 @@ public class Enemy : MonoBehaviour
 
 	[Header("LookAround Settings")]
 	[SerializeField]
-    public float lookAroundDuration = 5f;
 
     [Header("Detection Settings")]
     public SphereCollider detectionCollider;
-    public LayerMask playerLayer;
     [SerializeField]
     public float playerDetectionRadius = 10f;
     public float chaseDetectionRadius = 20f;
@@ -142,13 +136,6 @@ public class Enemy : MonoBehaviour
 		currentDestination = pointA;
 		navAgent.SetDestination(currentDestination);
 	}
-
-
-    public void ReturnToOrigin()
-    {
-        navAgent.isStopped = false;
-        navAgent.SetDestination(originPoint);
-    }
 
     public bool IsPlayerWithinChaseLimit(Vector3 playerPosition, float limit)
 	{

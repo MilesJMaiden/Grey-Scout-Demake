@@ -11,7 +11,7 @@ public class InvestigateState : IEnemyState
     public void EnterState(Enemy enemyContext)
     {
         this.enemy = enemyContext;
-        lookAroundTimer = enemy.lookAroundDuration;
+       
         initialRotation = enemy.transform.rotation;
     }
 
@@ -28,12 +28,6 @@ public class InvestigateState : IEnemyState
 			rotationAmount = -rotationAmount;
 		}
 		enemy.transform.Rotate(0, rotationAmount, 0);
-
-		// Switch the looking direction after half the duration has passed
-		if (lookAroundTimer <= enemy.lookAroundDuration * 0.5f)
-		{
-			isLookingLeft = !isLookingLeft;
-		}
 
         // Transition back to patrol state once the look around duration is over
         if (lookAroundTimer <= 0)

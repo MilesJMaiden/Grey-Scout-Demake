@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 474484324242928951}
   - component: {fileID: 1403231594019710442}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Slider
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1865326860369255986}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: GroundCheck
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 7477278802210361745}
   - component: {fileID: 295371743962712294}
   - component: {fileID: 114858153138636122}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Player UI Canvas WS
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 4145273472371119021}
   - component: {fileID: 6409024939636588685}
   - component: {fileID: 7881915430405119208}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Background
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 8285473447594567076}
   - component: {fileID: 1376752051740593726}
   - component: {fileID: 8524783059488994670}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -472,7 +472,7 @@ GameObject:
   - component: {fileID: 1266500824159452309}
   - component: {fileID: 2064140654703486485}
   - component: {fileID: 3966403868725910253}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: stamina_UI_label
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -606,7 +606,7 @@ GameObject:
   - component: {fileID: 4499079075003116795}
   - component: {fileID: 2711093319692653329}
   - component: {fileID: 6961928353537247215}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -679,7 +679,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7688689508878743357}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Fill Area
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -719,9 +719,9 @@ GameObject:
   - component: {fileID: 8959714947325162565}
   - component: {fileID: 521337334615650104}
   - component: {fileID: 7751093801591114581}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Player
-  m_TagString: PlayerDetectionCollider
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -969,7 +969,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2508290398335484796}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Model
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1002,7 +1002,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8363333917613624838}
   - component: {fileID: 23329735810269122}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: stamina_UI_Container
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1052,7 +1052,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8015062358943104121}
   - component: {fileID: 1910821159979517882}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: col
   m_TagString: PlayerDetectionCollider
   m_Icon: {fileID: 0}
@@ -1089,7 +1089,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1104,7 +1104,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8180861795978493496}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Camera Target
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -1138,7 +1138,7 @@ GameObject:
   - component: {fileID: 1429836473789277910}
   - component: {fileID: 6695984182924976295}
   - component: {fileID: 1837267253746905338}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1244,7 +1244,7 @@ GameObject:
   - component: {fileID: 6619440664113036290}
   - component: {fileID: 7659418491437923239}
   - component: {fileID: 6631111599957740787}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: player_UI_label
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1376,7 +1376,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2894212640652691617}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: detection_collider
   m_TagString: PlayerDetectionCollider
   m_Icon: {fileID: 0}

@@ -1211,9 +1211,19 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1910821159979517882, guid: 043a3c41abe8c794ca6c6aad59a48e39,
+        type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3981239150018524893, guid: 043a3c41abe8c794ca6c6aad59a48e39,
         type: 3}
       propertyPath: m_Name
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3981239150018524893, guid: 043a3c41abe8c794ca6c6aad59a48e39,
+        type: 3}
+      propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 4499079075003116795, guid: 043a3c41abe8c794ca6c6aad59a48e39,
