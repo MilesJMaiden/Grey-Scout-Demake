@@ -160,7 +160,7 @@ public class Captive : MonoBehaviour
 			RaycastHit hit;
 			if (Physics.Raycast(rayOrigin, (playerTransform.position - rayOrigin).normalized, out hit))
 			{
-				if (hit.transform.CompareTag("Player"))
+				if (hit.transform.CompareTag("PlayerDetectionCollider"))
 				{
 					timeOutOfSight = 0;
 				}
@@ -182,7 +182,7 @@ public class Captive : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		if (other.CompareTag("Player"))
+		if (other.CompareTag("PlayerDetectionCollider"))
 		{
 			// Add this captive to the list of captives in range of the player.
 			playerInteraction.AddCaptiveInRange(this);

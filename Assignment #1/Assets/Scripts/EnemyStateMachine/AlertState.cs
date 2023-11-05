@@ -5,27 +5,30 @@ public class AlertState : IEnemyState
 {
     private Enemy enemy;
     private float alertTimer;
-    private float alertThreshold = 5f; // Time in seconds until the enemy starts chasing the player
+    private float alertThreshold; // Time in seconds until the enemy starts chasing the player
 
     private enum AlertPhase { Looking, Moving }
     private AlertPhase currentPhase;
 
-    public AlertState(Enemy enemyContext)
+    // Constructor with alertThreshold parameter
+    public AlertState(Enemy enemyContext, float alertThreshold, float alertDetectionTime)
     {
         this.enemy = enemyContext;
-        currentPhase = AlertPhase.Looking;
+        this.alertThreshold = alertThreshold;
+        currentPhase = AlertPhase.Looking; // Initialize the phase
     }
 
     public void EnterState(Enemy enemyContext)
     {
         Debug.Log("Entering Alert State");
+        enemy = enemyContext;
         enemy.navAgent.speed = enemy.alertSpeed;
         alertTimer = 0f; // Reset the alert timer
     }
 
     public void UpdateState(Enemy enemyContext)
     {
-        this.enemy = enemyContext;
+        enemy = enemyContext;
 
         ThirdPersonController thirdPersonController = enemy.player.GetComponent<ThirdPersonController>();
         if (thirdPersonController != null && thirdPersonController.IsHidden && enemy.IsPlayerDetected())
@@ -39,18 +42,21 @@ public class AlertState : IEnemyState
         }
         else
         {
-            alertTimer = 0f; // Reset the timer if the player is not hidden
+            alertTimer = 0f; // Reset the timer if the player is not hidden or not detected
         }
 
         switch (currentPhase)
         {
             case AlertPhase.Looking:
-                currentPhase = AlertPhase.Moving;
-
+                // Face the player's last known position
+                FaceLastKnownPlayerPosition();
+                currentPhase = AlertPhase.Moving; // Change phase to Moving after looking around
                 break;
 
             case AlertPhase.Moving:
-                if (!enemy.navAgent.pathPending && HasReachedDestination())
+                // Move towards the player's last known position
+                enemy.navAgent.SetDestination(enemy.LastKnownPlayerPosition);
+                if (HasReachedDestination())
                 {
                     enemy.TransitionToState(new PatrolState());
                 }
@@ -58,30 +64,25 @@ public class AlertState : IEnemyState
         }
     }
 
+    private void FaceLastKnownPlayerPosition()
+    {
+        Vector3 directionToPlayer = enemy.LastKnownPlayerPosition - enemy.transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, lookRotation, Time.deltaTime * enemy.turnSpeed);
+    }
+
     private bool HasReachedDestination()
     {
-        if (!enemy.navAgent.pathPending)
-        {
-            if (enemy.navAgent.remainingDistance <= enemy.navAgent.stoppingDistance)
-            {
-                if (!enemy.navAgent.hasPath || enemy.navAgent.velocity.sqrMagnitude == 0f)
-                {
-                    return true;
-                }
-            }
-        }
-        return false;
+        // Check if the enemy has reached its destination
+        return !enemy.navAgent.pathPending && enemy.navAgent.remainingDistance <= enemy.navAgent.stoppingDistance;
     }
 
     public void ExitState(Enemy enemyContext)
     {
-        this.enemy = enemyContext;
-        // Reset any properties or states if necessary.
+        enemy = enemyContext;
+        // Reset any properties or states if necessary
         alertTimer = 0f; // Reset the alert timer when exiting the state
     }
 
-    public void TransitionToPatrolState()
-    {
-        enemy.TransitionToState(new PatrolState());
-    }
+    // You can remove the TransitionToPatrolState method if you're handling state transitions within the UpdateState method.
 }

@@ -6,6 +6,7 @@ TagManager:
   tags:
   - HideZone
   - PlayerDetectionCollider
+  - Enemy
   layers:
   - Default
   - TransparentFX

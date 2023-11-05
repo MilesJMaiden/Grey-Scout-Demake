@@ -7,22 +7,22 @@ public class ReturnToOriginState : IEnemyState
     public void EnterState(Enemy enemyContext)
     {
         this.enemy = enemyContext;
-        Debug.Log("Returning to Origin");
+        
         enemy.navAgent.speed = enemy.patrolSpeed; // Adjust the speed back to patrol speed
         enemy.navAgent.SetDestination(enemy.originPoint); // Set the destination back to the origin point
+        Debug.Log("Returning to Origin");
     }
 
     public void UpdateState(Enemy enemyContext)
     {
-        this.enemy = enemyContext;
-
-        if (!enemy.navAgent.pathPending && enemy.navAgent.remainingDistance <= enemy.navAgent.stoppingDistance)
+        if (enemy.IsAtDestination())
         {
+            Debug.Log("Reached Origin. Transitioning to PatrolState.");
             enemy.TransitionToState(new PatrolState());
         }
-
-        if (enemy.IsPlayerDetected())
+        else if (enemy.IsPlayerDetected())
         {
+            Debug.Log("Player detected. Transitioning to ChaseState.");
             enemy.TransitionToState(new ChaseState());
         }
     }

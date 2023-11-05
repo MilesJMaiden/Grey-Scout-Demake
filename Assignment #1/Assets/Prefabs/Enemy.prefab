@@ -185,7 +185,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 5
+  m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4608264458774484831
 GameObject:
@@ -813,7 +813,7 @@ GameObject:
   - component: {fileID: 6367739011241424}
   m_Layer: 9
   m_Name: Enemy
-  m_TagString: PlayerDetectionCollider
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -852,18 +852,16 @@ MonoBehaviour:
   originPoint: {x: 0, y: 0, z: 0}
   patrolRange: 5
   patrolSpeed: 1
-  pointA: {x: 0, y: 0, z: 0}
-  pointB: {x: 5, y: 0, z: 5}
-  currentDestination: {x: 0, y: 0, z: 0}
-  navAgent: {fileID: 8139019507428369659}
-  player: {fileID: 0}
   chaseSpeed: 4
-  chaseLimit: 6
   maxChaseTime: 3
-  alertSpeed: 5
-  alertLookDuration: 5
-  alertMoveDuration: 5
+  alertSpeed: 1
+  alertLookDuration: 3.5
+  alertDetectionTime: 3.5
+  alertThreshold: 5
+  chaseLimit: 10
   lookAroundDuration: 5
+  alertDuration: 5
+  turnSpeed: 15
   detectionCollider: {fileID: 5349669365485656760}
   playerLayer:
     serializedVersion: 2
@@ -872,6 +870,9 @@ MonoBehaviour:
   chaseDetectionRadius: 12
   originalDetectionRadius: 8
   isPlayerDetected: 0
+  lastKnownPlayerPosition: {x: 0, y: 0, z: 0}
+  navAgent: {fileID: 8139019507428369659}
+  player: {fileID: 0}
 --- !u!195 &8139019507428369659
 NavMeshAgent:
   m_ObjectHideFlags: 0
