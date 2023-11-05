@@ -13,6 +13,7 @@ public class ChaseState : IEnemyState
         enemy.navAgent.speed = enemy.chaseSpeed;
         chaseTimer = enemy.maxChaseTime; // If you want a timer, initialize it here
         enemy.detectionCollider.radius = enemy.chaseDetectionRadius;
+        enemy.chaseStateIndicator.SetActive(true);
     }
 
     public void UpdateState(Enemy enemyContext)
@@ -69,6 +70,8 @@ public class ChaseState : IEnemyState
     {
         enemy = enemyContext;
         enemy.detectionCollider.radius = enemy.originalDetectionRadius; // Restore the detection radius
+        enemy.chaseStateIndicator.SetActive(false);
+
         // Consider what to do when exiting chase state. Do you need to reset any variables or timers?
     }
 }

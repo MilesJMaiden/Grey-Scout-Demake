@@ -6,6 +6,8 @@ public class PatrolState : IEnemyState
         enemy.navAgent.speed = enemy.patrolSpeed; // Ensure the nav agent is set to patrol speed
         enemy.InitializePatrol();
         enemy.detectionCollider.radius = enemy.originalDetectionRadius;
+        enemy.alertStateIndicator.SetActive(false);
+        enemy.chaseStateIndicator.SetActive(false);
     }
 
     public void UpdateState(Enemy enemy)

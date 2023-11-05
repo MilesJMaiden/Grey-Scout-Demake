@@ -1,46 +1,93 @@
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
     public IEnemyState CurrentState;
 
     [Header("Patrol Settings")]
-    [SerializeField] private bool patrollingEnabled = true;
-    [SerializeField] public Vector3 originPoint = Vector3.zero; // Set this in the Inspector to your enemy's starting point
-    [SerializeField] public float patrolRange = 10f; // Adjust based on your level size
-    [SerializeField] public float patrolSpeed = 3.5f; // Can be slightly slower than the player's walk speed
+    [Tooltip("If true, the enemy will patrol between waypoints.")]
+    [SerializeField] public bool patrollingEnabled = true;
+
+    [Tooltip("The position from where the enemy starts patrolling.")]
+    [SerializeField] public Vector3 originPoint = Vector3.zero;
+
+    [Tooltip("The range around the origin point within which the enemy will patrol.")]
+    [SerializeField] public float patrolRange = 10f;
+
+    [Tooltip("The walking speed of the enemy while patrolling.")]
+    [SerializeField] public float patrolSpeed = 3.5f;
 
     [Header("Chase Settings")]
-    [SerializeField] public float chaseSpeed = 6f; // Should be faster than the player's walk speed but potentially slower than their sprint speed
-    [SerializeField] public float maxChaseTime = 15f; // Long enough for a chase but not too long that it becomes tedious
+    [Tooltip("The running speed of the enemy while chasing the player.")]
+    [SerializeField] public float chaseSpeed = 6f;
+
+    [Tooltip("The maximum duration the enemy will chase the player before giving up.")]
+    [SerializeField] public float maxChaseTime = 15f;
 
     [Header("Alert Settings")]
-    [SerializeField] public float alertSpeed = 2f; // Slower than patrol speed to give a tense feeling
-    [SerializeField] public float alertLookDuration = 3f; // Time spent looking around before pursuing
-    [SerializeField] public float alertDetectionTime = 10f; // Total time in alert mode before giving up
-    [SerializeField] public float alertThreshold = 2f; // Time before deciding to chase even if player is hidden
-    [SerializeField] public float chaseLimit = 15f; // Distance the enemy can chase before giving up
-    [SerializeField] public float lookAroundDuration = 5f; // Time spent looking around at the last known position
-    [SerializeField] public float alertDuration = 10f; // Total time spent in alert before transitioning to another state
-    [SerializeField] public float turnSpeed = 120f; // Quick enough to be responsive but not instantaneous
+    [Tooltip("The slider UI that represents the alert timer.")]
+    public Slider alertTimerSlider;
+
+    [Tooltip("The indicator object that becomes active when the enemy is in an alert state.")]
+    public GameObject alertStateIndicator;
+
+    [Tooltip("The indicator object that becomes active when the enemy is in an alert state.")]
+    public GameObject chaseStateIndicator;
+
+    [Tooltip("The speed at which the enemy moves when alert but not chasing.")]
+    [SerializeField] public float alertSpeed = 2f;
+
+    [Tooltip("The duration for which the enemy looks around when in an alert state.")]
+    [SerializeField] public float alertLookDuration = 3f;
+
+    [Tooltip("The time the enemy spends in an alert state after detecting the player.")]
+    [SerializeField] public float alertDetectionTime = 10f;
+
+    [Tooltip("The time threshold before the enemy decides to chase a hidden player.")]
+    [SerializeField] public float alertThreshold = 2f;
+
+    [Tooltip("The maximum distance the enemy will chase the player.")]
+    [SerializeField] public float chaseLimit = 15f;
+
+    [Tooltip("The duration for which the enemy investigates the last known player position.")]
+    [SerializeField] public float lookAroundDuration = 5f;
+
+    [Tooltip("The total duration the enemy spends in alert before transitioning to another state.")]
+    [SerializeField] public float alertDuration = 10f;
+
+    [Tooltip("The speed at which the enemy turns to face a new direction.")]
+    [SerializeField] public float turnSpeed = 120f;
 
     [Header("Detection Settings")]
-    [SerializeField] public SphereCollider detectionCollider; // Assign in Inspector
-    [SerializeField] public LayerMask playerLayer; // Assign in Inspector
-    [SerializeField] public float playerDetectionRadius = 15f; // Distance at which the enemy can spot the player
-    [SerializeField] public float chaseDetectionRadius = 25f; // Larger detection radius during chase to prevent easy escapes
-    [SerializeField] public float originalDetectionRadius; // You can set this in the Inspector or via script when initializing
+    [Tooltip("The collider that triggers player detection.")]
+    [SerializeField] public SphereCollider detectionCollider;
+
+    [Tooltip("The radius within which the player is detected by the enemy.")]
+    [SerializeField] public float playerDetectionRadius = 15f;
+
+    [Tooltip("The increased detection radius when the enemy is actively chasing the player.")]
+    [SerializeField] public float chaseDetectionRadius = 25f;
+
+    [Tooltip("The initial detection radius before any modifications like chasing.")]
+    [SerializeField] public float originalDetectionRadius;
 
     [Header("State Management")]
-    [SerializeField] public bool isPlayerDetected = false; // Default to not detected
-    [SerializeField] public Vector3 lastKnownPlayerPosition = Vector3.zero; // Updated during gameplay
+    [Tooltip("Indicates whether the player is currently detected by the enemy.")]
+    [SerializeField] public bool isPlayerDetected = false;
+
+    [Tooltip("The last known position of the player; updated when the player is seen or heard.")]
+    [SerializeField] public Vector3 lastKnownPlayerPosition = Vector3.zero;
 
     [Header("Internal Logic - Do Not Modify in Inspector")]
-    [SerializeField] public NavMeshAgent navAgent; // Assign in Inspector
-    [SerializeField] public GameObject player; // Assign in Inspector
+    [Tooltip("The navigation agent used for pathfinding and movement.")]
+    [SerializeField] public NavMeshAgent navAgent;
 
-    // Property to expose lastKnownPlayerPosition with a public getter and private setter.
+    [Tooltip("A reference to the player object for targeting and interaction.")]
+    [SerializeField] public GameObject player;
+
+    // Exposed property for lastKnownPlayerPosition
     public Vector3 LastKnownPlayerPosition
     {
         get => lastKnownPlayerPosition;
@@ -51,6 +98,9 @@ public class Enemy : MonoBehaviour
     {
         Initialize();
         TransitionToState(new PatrolState());
+        alertTimerSlider.value = 0;
+        alertStateIndicator.SetActive(false);
+        chaseStateIndicator.SetActive(false);
     }
 
     private void Update()
@@ -117,11 +167,6 @@ public class Enemy : MonoBehaviour
         {
             navAgent.SetDestination(hit.position);
         }
-    }
-
-    public bool IsPlayerWithinChaseLimit(Vector3 playerPosition, float limit)
-    {
-        return Vector3.Distance(transform.position, playerPosition) <= limit;
     }
 
     public void TransitionToState(IEnemyState newState)

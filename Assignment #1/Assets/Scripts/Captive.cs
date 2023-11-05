@@ -89,7 +89,7 @@ public class Captive : MonoBehaviour
 		interactionText.SetActive(false);
 
 		// Find and assign player transform
-		playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+		playerTransform = GameObject.FindGameObjectWithTag("PlayerDetectionCollider").transform;
 
 		// Setup NavMesh agent
 		navAgent = GetComponent<NavMeshAgent>();
@@ -191,7 +191,7 @@ public class Captive : MonoBehaviour
 
 	private void OnTriggerExit(Collider other)
 	{
-		if (other.CompareTag("Player"))
+		if (other.CompareTag("PlayerDetectionCollider"))
 		{
 			// Remove this captive from the list of captives in range.
 			playerInteraction.RemoveCaptiveInRange(this);

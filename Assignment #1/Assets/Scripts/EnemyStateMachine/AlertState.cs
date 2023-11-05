@@ -24,6 +24,7 @@ public class AlertState : IEnemyState
         enemy = enemyContext;
         enemy.navAgent.speed = enemy.alertSpeed;
         alertTimer = 0f; // Reset the alert timer
+        enemy.alertStateIndicator.SetActive(true);
     }
 
     public void UpdateState(Enemy enemyContext)
@@ -37,7 +38,11 @@ public class AlertState : IEnemyState
             if (alertTimer >= alertThreshold)
             {
                 enemy.TransitionToState(new ChaseState());
-                return;
+                
+            }
+            else
+            {
+                enemy.chaseStateIndicator.SetActive(false);
             }
         }
         else
@@ -82,6 +87,7 @@ public class AlertState : IEnemyState
         enemy = enemyContext;
         // Reset any properties or states if necessary
         alertTimer = 0f; // Reset the alert timer when exiting the state
+        enemy.alertStateIndicator.SetActive(false);
     }
 
     // You can remove the TransitionToPatrolState method if you're handling state transitions within the UpdateState method.

@@ -22,6 +22,7 @@ public class InvestigateState : IEnemyState
         Debug.Log("Entering Investigate State");
         this.enemy = enemyContext;
         enemy.navAgent.isStopped = true; // Stop the enemy while looking around
+        enemy.alertStateIndicator.SetActive(true);
     }
 
     public void UpdateState(Enemy enemyContext)
@@ -52,5 +53,6 @@ public class InvestigateState : IEnemyState
         this.enemy = enemyContext;
         enemy.transform.rotation = initialRotation; // Restore the enemy's rotation
         enemy.navAgent.isStopped = false; // Allow the enemy to move again
+        enemy.alertStateIndicator.SetActive(false);
     }
 }
