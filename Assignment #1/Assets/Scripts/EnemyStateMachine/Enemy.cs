@@ -211,6 +211,15 @@ public class Enemy : MonoBehaviour
                 Debug.LogError("ThirdPersonController component not found on the player.");
             }
         }
+
+        if (other.CompareTag("PlayerInteractionRange"))
+        {
+            ThirdPersonController playerController = other.GetComponentInParent<ThirdPersonController>();
+            if (playerController != null)
+            {
+                playerController.Die(); // This will handle the player's death
+            }
+        }
     }
     private void OnTriggerExit(Collider other)
     {

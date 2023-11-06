@@ -187,7 +187,13 @@ public class Captive : MonoBehaviour
 			// Add this captive to the list of captives in range of the player.
 			playerInteraction.AddCaptiveInRange(this);
 		}
-	}
+
+        if (other.CompareTag("ScoreZone"))
+        {
+            GameManager.Instance.AddScore(1); // Assuming each captive is worth 1 point
+            DisableCaptive();
+        }
+    }
 
 	private void OnTriggerExit(Collider other)
 	{
@@ -253,4 +259,12 @@ public class Captive : MonoBehaviour
 			return thirdPersonController.captives[index - 1].transform;
 		}
 	}
+    private void DisableCaptive()
+    {
+        // Disable all captive behaviors here
+        enabled = false;
+        navAgent.enabled = false;
+        // Hide captive or move it to a non-interactive layer
+        //gameObject.SetActive(false);
+    }
 }

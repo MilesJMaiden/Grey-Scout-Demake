@@ -692,6 +692,12 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
+    public void Die()
+    {
+        GameManager.Instance.LoseLife();
+        Destroy(gameObject); // Destroy the current player instance
+    }
+
     private void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("HideZone"))
