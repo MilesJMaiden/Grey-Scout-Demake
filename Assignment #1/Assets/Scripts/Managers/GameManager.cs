@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,11 +8,11 @@ public class GameManager : MonoBehaviour
 
     [Header("Score")]
     public int score = 0;
-    public Text scoreText;
+    public TextMeshProUGUI scoreText;
 
     [Header("Lives")]
     public int lives = 4;
-    public Text livesText;
+    public TextMeshProUGUI livesText;
 
     [Header("Player")]
     public GameObject playerPrefab;
