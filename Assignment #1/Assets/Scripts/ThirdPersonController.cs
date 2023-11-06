@@ -150,6 +150,9 @@ public class ThirdPersonController : MonoBehaviour
 	[Tooltip("Reference to the SphereCollider that manages player detection range.")]
 	[SerializeField] private SphereCollider detectionCollider;
 
+    [Tooltip("Reference to the SphereCollider that manages player detection range.")]
+    [SerializeField] public SphereCollider interactionCollider;
+
     // ----------------------- GIZMO SETTINGS -----------------------
     [Header("Gizmo Settings")]
     public bool showDetectionRadiusGizmo = true;  // Flag to toggle the gizmo on/off
@@ -696,6 +699,13 @@ public class ThirdPersonController : MonoBehaviour
     {
         GameManager.Instance.LoseLife();
         Destroy(gameObject); // Destroy the current player instance
+
+        // Find all enemies in the scene and reset them
+        Enemy[] enemies = FindObjectsOfType<Enemy>();
+        foreach (var enemy in enemies)
+        {
+            enemy.ResetEnemy();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -704,7 +714,14 @@ public class ThirdPersonController : MonoBehaviour
 		{
 			IsHidden = true;
 		}
-	}
+
+        // Check if the collider that entered the trigger is the enemy's kill collider
+        if (other.CompareTag("KillRangeCollider"))
+        {
+            // The player has collided with the enemy's kill collider, handle the player's death
+            Die();
+        }
+    }
 
 	private void OnTriggerExit(Collider other)
 	{

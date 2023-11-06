@@ -25,6 +25,14 @@ public class AlertState : IEnemyState
         enemy.navAgent.speed = enemy.alertSpeed;
         alertTimer = 0f; // Reset the alert timer
         enemy.alertStateIndicator.SetActive(true);
+
+        UpdateLastKnownPosition();
+    }
+
+    private void UpdateLastKnownPosition()
+    {
+        // Update the last known player position to the player's current position
+        enemy.lastKnownPlayerPosition = enemy.player.transform.position;
     }
 
     public void UpdateState(Enemy enemyContext)
@@ -71,8 +79,9 @@ public class AlertState : IEnemyState
 
     private void FaceLastKnownPlayerPosition()
     {
-        Vector3 directionToPlayer = enemy.LastKnownPlayerPosition - enemy.transform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+        Vector3 directionToLastKnownPosition = enemy.LastKnownPlayerPosition - enemy.transform.position;
+        directionToLastKnownPosition.y = 0; // Keep the direction on the horizontal plane
+        Quaternion lookRotation = Quaternion.LookRotation(directionToLastKnownPosition);
         enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, lookRotation, Time.deltaTime * enemy.turnSpeed);
     }
 

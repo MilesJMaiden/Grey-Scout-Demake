@@ -51,7 +51,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 8
+  m_Radius: 7
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3633497765695167797
 GameObject:
@@ -576,6 +576,91 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &5889249324681034783
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5097324511291084676}
+  m_Layer: 0
+  m_Name: KillCollider
+  m_TagString: KillRangeCollider
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5097324511291084676
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5889249324681034783}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 4551571061790989325}
+  m_Father: {fileID: 5394431295042706528}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7444450354023246422
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4551571061790989325}
+  - component: {fileID: 1497916838773778232}
+  m_Layer: 0
+  m_Name: KillRangeCollider
+  m_TagString: KillRangeCollider
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4551571061790989325
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7444450354023246422}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5097324511291084676}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &1497916838773778232
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7444450354023246422}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 1.25
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7742980648208583277
 GameObject:
   m_ObjectHideFlags: 0
@@ -647,6 +732,7 @@ Transform:
   m_Children:
   - {fileID: 6237771275034424066}
   - {fileID: 285899575975953596}
+  - {fileID: 5097324511291084676}
   - {fileID: 3301992522056497586}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -664,29 +750,30 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrollingEnabled: 1
   originPoint: {x: 0, y: 0, z: 0}
-  patrolRange: 5
-  patrolSpeed: 1
+  patrolRange: 6
+  patrolSpeed: 0.75
   chaseSpeed: 4
-  maxChaseTime: 3
+  maxChaseTime: 20
   alertTimerSlider: {fileID: 0}
   alertStateIndicator: {fileID: 3633497765695167797}
   chaseStateIndicator: {fileID: 8018957941609690317}
-  alertSpeed: 1
-  alertLookDuration: 3.5
-  alertDetectionTime: 3.5
-  alertThreshold: 5
-  chaseLimit: 10
-  lookAroundDuration: 5
-  alertDuration: 5
-  turnSpeed: 15
+  alertSpeed: 0.5
+  alertLookDuration: 3
+  alertDetectionTime: 6
+  alertThreshold: 3.5
+  chaseLimit: 12
+  lookAroundDuration: 8
+  alertDuration: 6
+  turnSpeed: 20
   detectionCollider: {fileID: 5349669365485656760}
-  playerDetectionRadius: 8
-  chaseDetectionRadius: 12
+  playerDetectionRadius: 7
+  chaseDetectionRadius: 14
   originalDetectionRadius: 8
   isPlayerDetected: 0
   lastKnownPlayerPosition: {x: 0, y: 0, z: 0}
   navAgent: {fileID: 8139019507428369659}
   player: {fileID: 0}
+  killRangeCollider: {fileID: 1497916838773778232}
 --- !u!195 &8139019507428369659
 NavMeshAgent:
   m_ObjectHideFlags: 0

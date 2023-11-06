@@ -58,7 +58,11 @@ public class Captive : MonoBehaviour
 	private float originalFollowDistance;
 
 	[Tooltip("List of captives currently within interaction range.")]
-	private List<Captive> captivesInRange = new List<Captive>();
+
+    [Header("Rescue Settings")]
+
+    [SerializeField] private bool isRescued = false;
+    private List<Captive> captivesInRange = new List<Captive>();
 
 	private void Awake()
 	{
@@ -180,7 +184,23 @@ public class Captive : MonoBehaviour
 		}
 	}
 
-	private void OnTriggerEnter(Collider other)
+    public void RescueCaptive()
+    {
+        if (!isRescued)
+        {
+            isRescued = true;
+            isFollowing = false;
+            navAgent.isStopped = true; // Stop the NavMeshAgent
+            navAgent.enabled = false; // Disable the NavMeshAgent to stop all movement
+            thirdPersonController.RemoveCaptive(this);
+            gameObject.SetActive(false); // Hide the captive
+
+            // Update the score or handle any effects related to the rescue
+            GameManager.Instance.AddScore(1); // Assuming you have a method to update the score
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("PlayerDetectionCollider"))
 		{
@@ -190,8 +210,8 @@ public class Captive : MonoBehaviour
 
         if (other.CompareTag("ScoreZone"))
         {
-            GameManager.Instance.AddScore(1); // Assuming each captive is worth 1 point
-            DisableCaptive();
+            // The captive has entered the score zone
+            RescueCaptive();
         }
     }
 

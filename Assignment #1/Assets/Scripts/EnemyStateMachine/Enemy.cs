@@ -87,6 +87,9 @@ public class Enemy : MonoBehaviour
     [Tooltip("A reference to the player object for targeting and interaction.")]
     [SerializeField] public GameObject player;
 
+
+    public SphereCollider killRangeCollider;
+
     // Exposed property for lastKnownPlayerPosition
     public Vector3 LastKnownPlayerPosition
     {
@@ -98,9 +101,9 @@ public class Enemy : MonoBehaviour
     {
         Initialize();
         TransitionToState(new PatrolState());
-        alertTimerSlider.value = 0;
         alertStateIndicator.SetActive(false);
         chaseStateIndicator.SetActive(false);
+        killRangeCollider = GetComponentInChildren<SphereCollider>();
     }
 
     private void Update()
@@ -169,6 +172,18 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void ResetToOriginAndPatrol()
+    {
+        // Reset enemy state as needed
+        isPlayerDetected = false;
+        // Set the destination back to the origin point
+        navAgent.SetDestination(originPoint);
+        // Set the patrol speed
+        navAgent.speed = patrolSpeed;
+        // Transition to the PatrolState
+        TransitionToState(new PatrolState());
+    }
+
     public void TransitionToState(IEnemyState newState)
     {
         if (CurrentState != null)
@@ -183,6 +198,14 @@ public class Enemy : MonoBehaviour
         // Set the initial patrol destination and speed
         navAgent.speed = patrolSpeed;
         SetRandomPatrolDestination();
+    }
+    public void ResetEnemy()
+    {
+        // Reset the enemy's state to patrol at its origin point
+        isPlayerDetected = false;
+        navAgent.SetDestination(originPoint);
+        navAgent.speed = patrolSpeed;
+        TransitionToState(new PatrolState());
     }
 
     private void OnTriggerEnter(Collider other)
@@ -212,12 +235,20 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (other.CompareTag("PlayerInteractionRange"))
+        // Check if the colliding object is the player and within the kill range
+        if (other.CompareTag("Player") && other == killRangeCollider)
         {
             ThirdPersonController playerController = other.GetComponentInParent<ThirdPersonController>();
             if (playerController != null)
             {
-                playerController.Die(); // This will handle the player's death
+                // Call a method to handle the player's death
+                playerController.Die();
+                // Reset enemy state after player dies
+                ResetToOriginAndPatrol();
+            }
+            else
+            {
+                Debug.LogError("ThirdPersonController component not found on the player.");
             }
         }
     }

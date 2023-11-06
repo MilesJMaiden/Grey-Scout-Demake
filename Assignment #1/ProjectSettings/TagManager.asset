@@ -8,6 +8,8 @@ TagManager:
   - PlayerDetectionCollider
   - Enemy
   - ScoreZone
+  - PlayerInteractionCollider
+  - KillRangeCollider
   layers:
   - Default
   - TransparentFX

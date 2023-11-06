@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c2eac387ede3b248b7dea13a936b8d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 0}
 --- !u!1 &1316229283930118074
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,6 +218,7 @@ MonoBehaviour:
   followDistance: 1.5
   maxFollowDistance: 20
   timeToLoseSight: 10
+  isRescued: 0
 --- !u!54 &5901211222943247352
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -424,7 +426,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 6
+  m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7711897439991346876
 GameObject:
