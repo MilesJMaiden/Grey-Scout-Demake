@@ -15,6 +15,12 @@ public class CreateGrass : MonoBehaviour
     public float shortestGrass = 1.2f;
     public float tallestGrass = 1.6f;
 
+    //public GameObject playerMaterial;
+    public Material shaderMaterial;
+
+    public GameObject player;
+
+
 
     void Start()
     {
@@ -28,6 +34,11 @@ public class CreateGrass : MonoBehaviour
                 grass.transform.localScale = new Vector3(1, Random.Range(shortestGrass, tallestGrass), 1);
             }
         }
+    }
+
+    private void Update()
+    {
+        shaderMaterial.SetVector("_TramplePosition", player.transform.position);
     }
 
 }
