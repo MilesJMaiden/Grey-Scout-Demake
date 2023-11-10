@@ -23,8 +23,10 @@ public class ThirdPersonController : MonoBehaviour
 	private Vector3 originalControllerCenter;
 	private float originalCapsuleMeshScaleY;
 
-	// ----------------------- CAMERA SETTINGS -----------------------
-	[Tooltip("Reference to the main camera's transform.")]
+    public GameObject characterModel;
+
+    // ----------------------- CAMERA SETTINGS -----------------------
+    [Tooltip("Reference to the main camera's transform.")]
 	public Transform cameraTransform;
 
 	[Tooltip("Target around which the camera rotates.")]
@@ -309,46 +311,43 @@ public class ThirdPersonController : MonoBehaviour
     }
 
     public void Move()
-	{
-		float currentMoveSpeed = originalMoveSpeed;
+    {
+        float currentMoveSpeed = originalMoveSpeed;
 
-		if (IsGrounded())
-		{
-			if (isCrouching)
-			{
-				currentMoveSpeed = crouchSpeed;
-			}
-			else if (wasSprintingWhenJumped && !isSprinting) // If player was sprinting but released sprint button before landing
-			{
-				currentMoveSpeed = originalMoveSpeed; // Reset to default move speed
-				wasSprintingWhenJumped = false; // Reset the flag
-			}
-			else
-			{
-				currentMoveSpeed = isSprinting ? originalMoveSpeed * sprintMultiplier : originalMoveSpeed;
-			}
+        // Determine the direction of movement
+        Vector3 moveDirection = (IsGrounded() || isDoubleJumping) ? GetMoveDirection() : lastGroundedMoveDirection;
 
-			lastGroundedMoveDirection = doubleJumpDirection = GetMoveDirection();
-		}
-		else  // In-air
-		{
-			if (isSprinting)
-			{
-				wasSprintingWhenJumped = true; // Player jumped while sprinting
-			}
+        // Apply crouching or sprinting speed modifiers
+        if (isCrouching)
+        {
+            currentMoveSpeed = crouchSpeed;
+        }
+        else if (wasSprintingWhenJumped && !isSprinting) // If player was sprinting but released sprint button before landing
+        {
+            currentMoveSpeed = originalMoveSpeed; // Reset to default move speed
+            wasSprintingWhenJumped = false; // Reset the flag
+        }
+        else if (isSprinting)
+        {
+            currentMoveSpeed = originalMoveSpeed * sprintMultiplier;
+        }
 
-			currentMoveSpeed = wasSprintingWhenJumped ? originalMoveSpeed * sprintMultiplier : jumpStartMoveSpeed;
-			lastGroundedMoveDirection = doubleJumpDirection;
-		}
+        // Move the character controller
+        characterController.Move(moveDirection * currentMoveSpeed * Time.deltaTime);
 
-		characterController.Move(lastGroundedMoveDirection * currentMoveSpeed * Time.deltaTime);
+        // Apply gravity
+        velocity.y += gravity * Time.deltaTime;
+        characterController.Move(velocity * Time.deltaTime);
 
-		// Gravity
-		velocity.y += gravity * Time.deltaTime;
-		characterController.Move(velocity * Time.deltaTime);
-	}
+        // Rotate the character model to face the direction of movement
+        if (moveDirection != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            characterModel.transform.rotation = Quaternion.Slerp(characterModel.transform.rotation, targetRotation, Time.deltaTime * 5f);
+        }
+    }
 
-	private Vector3 GetMoveDirection()
+    private Vector3 GetMoveDirection()
 	{
 		Vector3 forward = cameraTransform.forward;
 		Vector3 right = cameraTransform.right;
