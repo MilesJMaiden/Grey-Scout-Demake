@@ -166,7 +166,7 @@ public class ThirdPersonController : MonoBehaviour
 	void Awake()
 	{
 		characterController = GetComponent<CharacterController>();
-		// Store original values
+
 		originalControllerHeight = characterController.height;
 		originalControllerCenter = characterController.center;
 		originalCapsuleMeshScaleY = capsuleMeshTransform.localScale.y;
@@ -191,8 +191,13 @@ public class ThirdPersonController : MonoBehaviour
 		Move();
 		Look();
 		UpdateStamina();
-		UpdateStaminaUI();
-		AdjustDetectionCollider();
+
+        if (!isCrouching)
+        {
+            UpdateStaminaUI();
+        }
+
+        AdjustDetectionCollider();
 	}
     public void SetCamera(Transform newCameraTransform)
     {
@@ -214,7 +219,7 @@ public class ThirdPersonController : MonoBehaviour
 	{
 		if (context.started && jumpCount < maxJumpCount)
 		{
-			if (IsGrounded()) // First jump
+			if (IsGrounded())
 			{
 				if (isCrouching)
 				{
@@ -229,7 +234,7 @@ public class ThirdPersonController : MonoBehaviour
 			}
 			else if (enableDoubleJump && jumpCount == 1) // Double jump
 			{
-				// Set the in-air direction based on current WASD
+				// Set the in-air direction
 				Vector3 forward = cameraTransform.forward;
 				Vector3 right = cameraTransform.right;
 
@@ -242,7 +247,7 @@ public class ThirdPersonController : MonoBehaviour
 				doubleJumpDirection.Normalize();
 				isDoubleJumping = true;
 				Jump();
-				jumpCount++; // Increment jump count after double jump
+				jumpCount++;
 			}
 		}
 	}
@@ -524,7 +529,7 @@ public class ThirdPersonController : MonoBehaviour
 
     void StartSprint()
     {
-        if (IsGrounded() && currentStamina > sprintInitiationCost && canSprint)
+        if (IsGrounded() && currentStamina > sprintInitiationCost && canSprint && !isCrouching)
         {
             isSprinting = true;
             staminaUITimer = 0f;
@@ -597,18 +602,24 @@ public class ThirdPersonController : MonoBehaviour
     }
     void UpdateStaminaUI()
     {
+        // Update the UI value
         staminaSlider.value = currentStamina / maxStamina;
 
-        // Always display UI when sprinting or when stamina is not full
-        shouldDisplayUI = isSprinting || currentStamina < maxStamina;
+        // Determine if the UI should be displayed
+        shouldDisplayUI = (isSprinting || currentStamina < maxStamina) && !isCrouching;
 
+        // Handle the visibility of the UI based on the shouldDisplayUI flag
         if (shouldDisplayUI)
         {
-            staminaSlider.gameObject.SetActive(true);
+            if (!staminaSlider.gameObject.activeSelf)
+            {
+                staminaSlider.gameObject.SetActive(true);
+            }
             staminaSlider.transform.forward = cameraTransform.forward;
         }
-        else if (!shouldDisplayUI && !isUIFading) 
+        else if (!shouldDisplayUI && staminaSlider.gameObject.activeSelf && !isUIFading)
         {
+            // If we're crouching and the stamina is full, we can disable the UI immediately
             staminaSlider.gameObject.SetActive(false);
         }
     }
