@@ -12889,11 +12889,12 @@ MonoBehaviour:
   cameraDistance: 5
   lookSpeed: 1
   moveSpeed: 5
+  VFXContainer: {fileID: 9138309863804962530}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
   groundCheck: {fileID: 788120570138091558}
-  jumpHeight: 2
+  jumpHeight: 1
   groundCheckDistance: 0.1
   enableDoubleJump: 1
   maxJumpCount: 2

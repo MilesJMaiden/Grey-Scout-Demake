@@ -99,11 +99,13 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable()
     {
+        EnemyManager.Instance.RegisterEnemy(this);
         GameManager.OnPlayerRespawned += UpdatePlayerReference;
     }
 
     private void OnDisable()
     {
+        EnemyManager.Instance.UnregisterEnemy(this);
         GameManager.OnPlayerRespawned -= UpdatePlayerReference;
     }
 

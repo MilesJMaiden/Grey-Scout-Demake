@@ -47,6 +47,7 @@ public class ThirdPersonController : MonoBehaviour
 	private Vector2 moveInput;
 	private Vector3 lastGroundedMoveDirection = Vector3.zero;
 	private float originalMoveSpeed;
+	public GameObject VFXContainer;
 
 	// ----------------------- GROUND CHECK -----------------------
 	[Header("Ground")]
@@ -417,6 +418,9 @@ public class ThirdPersonController : MonoBehaviour
 
 	bool IsGrounded()
 	{
+
+
+
 		Vector3 checkPosition = groundCheck.transform.position;
 		return Physics.CheckSphere(checkPosition, groundCheckDistance, groundLayer);
 	}
@@ -425,11 +429,18 @@ public class ThirdPersonController : MonoBehaviour
 	{
 		if (IsGrounded())
 		{
-			// Check if player just landed
-			if (!wasGroundedLastFrame)
+            VFXContainer.SetActive(true);
+
+            // Check if player just landed
+            if (!wasGroundedLastFrame)
 			{
 				HandleLanding();
 			}
+		} 
+		else 
+		{ 
+			VFXContainer.SetActive(false);
+		
 		}
 
 		// Store this frame's grounded status for next frame

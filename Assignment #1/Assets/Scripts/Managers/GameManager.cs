@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     public GameObject playerPrefab;
     public Transform spawnPoint;
 
+    [Header("Pause")]
+    public bool isGamePaused = false;
+    public GameObject pauseMenuUI;
+
     private void Awake()
     {
         if (Instance == null)
@@ -37,6 +41,35 @@ public class GameManager : MonoBehaviour
     {
         UpdateScoreText();
         UpdateLivesText();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isGamePaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
+    }
+
+    public void PauseGame()
+    {
+        pauseMenuUI.SetActive(true); // Activate the pause menu UI
+        Time.timeScale = 0f; // Freeze the game time
+        isGamePaused = true;
+    }
+
+    public void ResumeGame()
+    {
+        pauseMenuUI.SetActive(false); // Deactivate the pause menu UI
+        Time.timeScale = 1f; // Resume the game time
+        isGamePaused = false;
     }
 
     public void AddScore(int amount)
