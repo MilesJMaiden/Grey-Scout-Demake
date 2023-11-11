@@ -5,7 +5,7 @@ public class EnemyManager : MonoBehaviour
 {
     public static EnemyManager Instance { get; private set; }
 
-    public List<Enemy> activeEnemies = new List<Enemy>();
+    public List<Enemy> activeEnemies;
 
     private void Awake()
     {

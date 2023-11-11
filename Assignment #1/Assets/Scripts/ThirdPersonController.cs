@@ -407,20 +407,17 @@ public class ThirdPersonController : MonoBehaviour
 		if (IsGrounded())
 		{
 			lastGroundedMoveDirection = forward * moveInput.y + right * moveInput.x;
-			jumpCount = 1; // First jump
+			jumpCount = 1;
 		}
-		else if (jumpCount == 1) // If this is a double jump
+		else if (jumpCount == 1)
 		{
 			doubleJumpDirection = forward * moveInput.y + right * moveInput.x;
-			jumpCount++; // Increase to 2
+			jumpCount++;
 		}
 	}
 
 	bool IsGrounded()
 	{
-
-
-
 		Vector3 checkPosition = groundCheck.transform.position;
 		return Physics.CheckSphere(checkPosition, groundCheckDistance, groundLayer);
 	}
@@ -431,7 +428,6 @@ public class ThirdPersonController : MonoBehaviour
 		{
             VFXContainer.SetActive(true);
 
-            // Check if player just landed
             if (!wasGroundedLastFrame)
 			{
 				HandleLanding();
@@ -478,7 +474,7 @@ public class ThirdPersonController : MonoBehaviour
 			newScale.y = originalCapsuleMeshScaleY;
 			capsuleMeshTransform.localScale = newScale;
 
-			moveSpeed = originalMoveSpeed;  // Always reset move speed when stopping the crouch
+			moveSpeed = originalMoveSpeed;
 		}
 	}
 
@@ -486,7 +482,6 @@ public class ThirdPersonController : MonoBehaviour
 	{
 		isCrouching = true;
 
-		// Adjust the capsule mesh Y scale only
 		Vector3 newScale = capsuleMeshTransform.localScale;
 		newScale.y = originalCapsuleMeshScaleY * crouchHeightMultiplier;
 		capsuleMeshTransform.localScale = newScale;
@@ -496,14 +491,12 @@ public class ThirdPersonController : MonoBehaviour
 	{
 		isCrouching = false;
 
-		// Reset the capsule mesh Y scale 
 		Vector3 newScale = capsuleMeshTransform.localScale;
 		newScale.y = originalCapsuleMeshScaleY;
 		capsuleMeshTransform.localScale = newScale;
 
-		jumpedWhileCrouching = false;  // Reset the flag when stopping mid-air crouch
+		jumpedWhileCrouching = false;  // Reset
 
-		// If we want the player to stop crouching mid-air when the button is released:
 		if (!isToggleCrouch)
 		{
 			if (isCrouching)
@@ -515,7 +508,7 @@ public class ThirdPersonController : MonoBehaviour
 
 	private void HandleLanding()
 	{
-		jumpCount = 0; // Reset jump count
+		jumpCount = 0; // Reset
 
 		if (isCrouching)
 		{
@@ -526,7 +519,6 @@ public class ThirdPersonController : MonoBehaviour
 			moveSpeed = originalMoveSpeed;
 		}
 
-		// Reset this flag once we handle the landing
 		jumpedWhileCrouching = false;
 	}
 
@@ -585,12 +577,11 @@ public class ThirdPersonController : MonoBehaviour
                 currentStamina = Mathf.Min(currentStamina, maxStamina);
             }
 
-            if (currentStamina >= maxStamina - 0.01f && !isSprinting)  // Adjusted check for max stamina
+            if (currentStamina >= maxStamina - 0.01f && !isSprinting)
             {
                 canSprint = true;
                 staminaUITimer += Time.deltaTime;
 
-                // If our timer exceeds the set time, and there is no ongoing fade operation, initiate the fade
                 if (staminaUITimer > delayBeforeFade && fadeCoroutine == null)
                 {
                     fadeCoroutine = StartCoroutine(FadeOutUI());
@@ -598,7 +589,6 @@ public class ThirdPersonController : MonoBehaviour
             }
             else
             {
-                // Reset timer if stamina is not full or if player starts sprinting again
                 staminaUITimer = 0f;
             }
         }
@@ -617,7 +607,7 @@ public class ThirdPersonController : MonoBehaviour
             staminaSlider.gameObject.SetActive(true);
             staminaSlider.transform.forward = cameraTransform.forward;
         }
-        else if (!shouldDisplayUI && !isUIFading)  // Only hide when it's not fading
+        else if (!shouldDisplayUI && !isUIFading) 
         {
             staminaSlider.gameObject.SetActive(false);
         }
@@ -625,7 +615,6 @@ public class ThirdPersonController : MonoBehaviour
 
     IEnumerator FadeOutUI()
     {
-        //Debug.Log("FadeOutUI started!"); // For debugging
         isUIFading = true;
         float elapsed = 0f;
         float initialAlpha = staminaUICanvasGroup.alpha;
@@ -637,7 +626,6 @@ public class ThirdPersonController : MonoBehaviour
             yield return null;
         }
 
-        //Debug.Log("FadeOutUI completed!"); // For debugging
         shouldDisplayUI = false;
         isUIFading = false;
         fadeCoroutine = null;
@@ -654,8 +642,6 @@ public class ThirdPersonController : MonoBehaviour
 	public void RemoveCaptive(Captive captive)
 	{
 		captives.Remove(captive);
-		// Adjust following behavior for remaining captives, if needed.
-		// The subsequent captive will now follow the previous one.
 	}
 
 	public Captive GetCaptiveClosestToScreenCenter()

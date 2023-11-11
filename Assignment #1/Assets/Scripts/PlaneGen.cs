@@ -79,25 +79,8 @@ public class PlaneGen : MonoBehaviour
 
     private void Update()
     {
-        if (shaderMaterial != null)
-        {
-            List<Vector4> positions = new List<Vector4>();
-
-            // Add the player's position if the player exists
-            if (player != null)
-            {
-                positions.Add(new Vector4(player.position.x, player.position.y, player.position.z, 1));
-            }
-
-            // Add the positions of all active enemies
-            foreach (Enemy enemy in EnemyManager.Instance.activeEnemies)
-            {
-                positions.Add(new Vector4(enemy.transform.position.x, enemy.transform.position.y, enemy.transform.position.z, 1));
-            }
-
-            // Now, convert the List to an array and pass it to the shader
-            shaderMaterial.SetVectorArray("_TramplePosition", positions.ToArray());
-        }
+        if (shaderMaterial != null && player != null)
+            shaderMaterial.SetVector("_TramplePosition", player.position);
     }
 
     void CreateGrassArea(GrassArea grassArea, GameObject masterGrassContainer)
