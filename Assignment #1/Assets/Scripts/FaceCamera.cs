@@ -16,4 +16,6 @@ public class FaceCamera : MonoBehaviour
 
 		transform.rotation = Quaternion.LookRotation(direction);
 	}
+
+
 }

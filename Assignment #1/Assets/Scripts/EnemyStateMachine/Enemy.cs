@@ -97,6 +97,24 @@ public class Enemy : MonoBehaviour
         private set => lastKnownPlayerPosition = value;
     }
 
+    private void OnEnable()
+    {
+        GameManager.OnPlayerRespawned += UpdatePlayerReference;
+    }
+
+    private void OnDisable()
+    {
+        GameManager.OnPlayerRespawned -= UpdatePlayerReference;
+    }
+
+    private void UpdatePlayerReference(GameObject newPlayer)
+    {
+        player = newPlayer;
+
+        // Optionally, reset the state machine if needed
+        TransitionToState(new PatrolState());
+    }
+
     private void Start()
     {
         Initialize();
@@ -104,6 +122,11 @@ public class Enemy : MonoBehaviour
         alertStateIndicator.SetActive(false);
         chaseStateIndicator.SetActive(false);
         killRangeCollider = GetComponentInChildren<SphereCollider>();
+    }
+
+    public void SetPlayer(GameObject newPlayer)
+    {
+        player = newPlayer;
     }
 
     private void Update()

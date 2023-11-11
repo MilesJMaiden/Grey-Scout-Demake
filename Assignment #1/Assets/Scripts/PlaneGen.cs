@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CreateGrass : MonoBehaviour
+public class PlaneGen : MonoBehaviour
 {
     public GameObject grassPrefab;
     public List<GrassArea> grassAreas;
@@ -52,9 +52,13 @@ public class CreateGrass : MonoBehaviour
 
     void Start()
     {
+        // Create a master container for all grass area containers
+        GameObject masterGrassContainer = new GameObject("MasterGrassContainer");
+        masterGrassContainer.transform.SetParent(transform, false); // Set as child of the plane
+
         foreach (GrassArea grassArea in grassAreas)
         {
-            CreateGrassArea(grassArea);
+            CreateGrassArea(grassArea, masterGrassContainer);
         }
 
         CreateForest();
@@ -66,20 +70,25 @@ public class CreateGrass : MonoBehaviour
             shaderMaterial.SetVector("_TramplePosition", player.position);
     }
 
-    void CreateGrassArea(GrassArea grassArea)
+    void CreateGrassArea(GrassArea grassArea, GameObject masterGrassContainer)
     {
         // Calculate the center position based on the origin point and area size
         Vector3 centerPosition = new Vector3(grassArea.originPoint.x, tallestGrass / 2, grassArea.originPoint.y);
-        GameObject grassAreaContainer = new GameObject("GrassAreaContainer");
-        grassAreaContainer.transform.position = centerPosition;
-        grassAreaContainer.transform.parent = transform; // Set the plane as the parent
 
-        int grassCountX = Mathf.RoundToInt(grassArea.areaSize.x / distanceApart);
-        int grassCountZ = Mathf.RoundToInt(grassArea.areaSize.y / distanceApart);
+        // Create a new container GameObject for this grass area
+        GameObject grassAreaContainer = new GameObject("GrassAreaContainer_" + grassArea.originPoint);
+        grassAreaContainer.transform.SetParent(masterGrassContainer.transform, false); // Set as child of the master container
+        grassAreaContainer.transform.localPosition = centerPosition - new Vector3(0, tallestGrass / 2, 0); // Adjust local position relative to the master container
 
-        for (int z = 0; z < grassCountZ; z++)
+        int grassCountX = Mathf.CeilToInt(grassArea.areaSize.x / distanceApart);
+        int grassCountZ = Mathf.CeilToInt(grassArea.areaSize.y / distanceApart);
+
+        // Start at the bottom-left corner of the grass area
+        Vector3 startPosition = centerPosition - new Vector3(grassArea.areaSize.x / 2, 0, grassArea.areaSize.y / 2);
+
+        for (int x = 0; x < grassCountX; x++)
         {
-            for (int x = 0; x < grassCountX; x++)
+            for (int z = 0; z < grassCountZ; z++)
             {
                 Vector3 positionOffset = new Vector3(
                     x * distanceApart + Random.Range(-randomDistanceOffset, randomDistanceOffset),
@@ -87,25 +96,28 @@ public class CreateGrass : MonoBehaviour
                     z * distanceApart + Random.Range(-randomDistanceOffset, randomDistanceOffset)
                 );
 
-                Vector3 grassPosition = centerPosition + positionOffset - new Vector3(0, tallestGrass / 2, 0); // Adjust position for grass instantiation
+                Vector3 grassPosition = startPosition + positionOffset; // Position relative to the grass area's bottom-left corner
 
-                GameObject grass = Instantiate(grassPrefab, grassPosition, Quaternion.identity, grassAreaContainer.transform); // Set as child of container
+                GameObject grass = Instantiate(grassPrefab, grassPosition, Quaternion.identity, grassAreaContainer.transform);
                 grass.transform.localScale = new Vector3(1, Random.Range(shortestGrass, tallestGrass), 1);
             }
         }
 
-        // Add and configure the box collider
+        // Add and configure the box collider for this grass area
         BoxCollider areaCollider = grassAreaContainer.AddComponent<BoxCollider>();
         areaCollider.size = new Vector3(grassArea.areaSize.x, tallestGrass, grassArea.areaSize.y);
-        areaCollider.center = new Vector3(0, tallestGrass / 2, 0); // Move collider center up
+        areaCollider.center = new Vector3(0, tallestGrass / 2, 0); // Adjust collider center
         areaCollider.isTrigger = true;
         areaCollider.tag = "HideZone";
     }
 
     void CreateForest()
     {
-        // Assuming the size of the plane is 250 x 250 in world units.
+        // Create a container for the trees
+        GameObject treeContainer = new GameObject("TreeContainer");
+        treeContainer.transform.parent = transform; // Set the plane as the parent
 
+        // Assuming the size of the plane is 250 x 250 in world units.
         // Calculate the bounds of the plane
         float halfPlaneSize = planeSize / 2;
         float minX = transform.position.x - halfPlaneSize;
@@ -134,23 +146,10 @@ public class CreateGrass : MonoBehaviour
                         0, // Assuming the ground is at y = 0
                         z + Random.Range(-treeRandomDistanceOffset, treeRandomDistanceOffset)
                     );
-                    Instantiate(treePrefab, treePosition, Quaternion.identity, transform);
+                    // Instantiate the tree as a child of the tree container
+                    GameObject tree = Instantiate(treePrefab, treePosition, Quaternion.identity, treeContainer.transform);
                 }
             }
-        }
-    }
-
-    bool IsWithinShapeBounds(Vector3 position, Vector3 center, GrassArea area)
-    {
-        switch (area.shape)
-        {
-            case GrassShape.Circle:
-                return Vector3.Distance(position, center) <= area.radius;
-            case GrassShape.Square:
-                return Mathf.Abs(position.x - center.x) <= area.areaSize.x / 2 &&
-                       Mathf.Abs(position.z - center.z) <= area.areaSize.y / 2;
-            default:
-                return false;
         }
     }
 
@@ -158,31 +157,27 @@ public class CreateGrass : MonoBehaviour
     {
         if (!showGizmos) return;
 
-        // Draw gizmos for the border area where trees will be instantiated
-        float planeSize = 250f; // The size of your plane
-        Vector3 planeCenter = transform.position;
-        float borderSize = planeSize - 2 * forestEdgeWidth;
-
         // Draw the border area where trees will be instantiated
         Gizmos.color = treeGizmoColor;
-        Gizmos.DrawWireCube(planeCenter, new Vector3(borderSize, 1f, borderSize));
+        Gizmos.DrawWireCube(transform.position, new Vector3(planeSize - 2 * forestEdgeWidth, 1f, planeSize - 2 * forestEdgeWidth));
 
         // Draw the inner area to show where trees won't be placed
         Gizmos.color = new Color(0, 1, 0, 0.5f); // Semi-transparent green
-        Gizmos.DrawWireCube(planeCenter, new Vector3(borderSize, 1f, borderSize));
+        Gizmos.DrawWireCube(transform.position, new Vector3(planeSize - 2 * (forestEdgeWidth + treeEdgeBuffer), 1f, planeSize - 2 * (forestEdgeWidth + treeEdgeBuffer)));
 
         // Draw gizmos for grass areas
-        Gizmos.color = grassGizmoColor;
         foreach (GrassArea grassArea in grassAreas)
         {
-            Vector3 grassCenterPosition = new Vector3(grassArea.originPoint.x, 0, grassArea.originPoint.y);
+            Vector3 grassCenterPosition = new Vector3(grassArea.originPoint.x, tallestGrass / 2, grassArea.originPoint.y);
+            Vector3 startGizmoPosition = grassCenterPosition - new Vector3(grassArea.areaSize.x / 2, 0, grassArea.areaSize.y / 2);
+
+            Gizmos.color = grassGizmoColor;
             if (grassArea.shape == GrassShape.Circle)
             {
                 Gizmos.DrawWireSphere(grassCenterPosition, grassArea.radius);
             }
             else
             {
-                // Draw a cube for each grass patch
                 int grassCountX = Mathf.CeilToInt(grassArea.areaSize.x / distanceApart);
                 int grassCountZ = Mathf.CeilToInt(grassArea.areaSize.y / distanceApart);
 
@@ -191,13 +186,13 @@ public class CreateGrass : MonoBehaviour
                     for (int z = 0; z < grassCountZ; z++)
                     {
                         Vector3 positionOffset = new Vector3(
-                            (x * distanceApart + distanceApart / 2f) - grassArea.areaSize.x / 2,
+                            x * distanceApart,
                             0,
-                            (z * distanceApart + distanceApart / 2f) - grassArea.areaSize.y / 2
+                            z * distanceApart
                         );
 
-                        Vector3 grassPosition = grassCenterPosition + positionOffset;
-                        Gizmos.DrawCube(grassPosition, new Vector3(0.1f, 0.1f, 0.1f)); // Adjust the size as needed
+                        Vector3 gizmoPosition = startGizmoPosition + positionOffset;
+                        Gizmos.DrawWireCube(gizmoPosition, new Vector3(1, tallestGrass, 1) * 0.1f); // Scale down the gizmo representation
                     }
                 }
             }

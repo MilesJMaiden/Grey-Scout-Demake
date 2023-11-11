@@ -180,8 +180,8 @@ public class ThirdPersonController : MonoBehaviour
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 
-        staminaUICanvasGroup.alpha = 0f;  // Set initial transparency to 0 so it's hidden
-        staminaUITimer = staminaUIFadeDelay;  // Initialize the timer to the display time
+        staminaUICanvasGroup.alpha = 0f;  //hidden
+        staminaUITimer = staminaUIFadeDelay;
     }
 
 	private void Update()
@@ -193,8 +193,13 @@ public class ThirdPersonController : MonoBehaviour
 		UpdateStaminaUI();
 		AdjustDetectionCollider();
 	}
+    public void SetCamera(Transform newCameraTransform)
+    {
+        cameraTransform = newCameraTransform;
+    }
 
-	public void OnMove(InputAction.CallbackContext context)
+
+    public void OnMove(InputAction.CallbackContext context)
 	{
 		moveInput = context.ReadValue<Vector2>();
 	}
@@ -223,7 +228,7 @@ public class ThirdPersonController : MonoBehaviour
 			}
 			else if (enableDoubleJump && jumpCount == 1) // Double jump
 			{
-				// Set the in-air direction based on current WASD/joystick 
+				// Set the in-air direction based on current WASD
 				Vector3 forward = cameraTransform.forward;
 				Vector3 right = cameraTransform.right;
 
@@ -290,14 +295,13 @@ public class ThirdPersonController : MonoBehaviour
 			}
 			else
 			{
-				// If we're already sprinting, stop. Otherwise, start sprinting.
 				if (isSprinting)
 					StopSprint();
 				else
 					StartSprint();
 			}
 		}
-		// When the sprint action ends (button/key is released)
+		//(button/key is released)
 		else if (context.canceled && holdToSprint)
 		{
 			// Stop sprinting

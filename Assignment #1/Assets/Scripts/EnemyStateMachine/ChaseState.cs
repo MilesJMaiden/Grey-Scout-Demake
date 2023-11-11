@@ -27,6 +27,14 @@ public class ChaseState : IEnemyState
             return; // Stop execution if the player script is not found
         }
 
+        if (enemyContext.player == null)
+        {
+            // Handle the case where the player has been destroyed
+            Debug.LogWarning("Player object is missing, transitioning to PatrolState.");
+            enemyContext.TransitionToState(new PatrolState());
+            return;
+        }
+
         // Check if the player is within chase limit
         //if (!enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
         //{

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,6 +6,8 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
+    public static event Action<GameObject> OnPlayerRespawned;
 
     [Header("Score")]
     public int score = 0;
@@ -74,7 +77,20 @@ public class GameManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
-        Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+        GameObject player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+        ThirdPersonController controller = player.GetComponent<ThirdPersonController>();
+        if (controller != null)
+        {
+            // Update the camera transform on the player
+            controller.SetCamera(Camera.main.transform);
+        }
+        else
+        {
+            Debug.LogError("ThirdPersonController script not found on the respawned player.");
+        }
+
+        // Notify any listeners that the player has been respawned
+        OnPlayerRespawned?.Invoke(player);
     }
 
     private void GameOver()
