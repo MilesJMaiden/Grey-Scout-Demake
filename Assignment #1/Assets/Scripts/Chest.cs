@@ -60,7 +60,6 @@ public class Chest : MonoBehaviour
 
     public void OpenChest()
     {
-        // Increase the player's score by 5
         GameManager.Instance.AddScore(scoreValue);
 
         hasInteracted = true;
@@ -73,18 +72,26 @@ public class Chest : MonoBehaviour
         Destroy(textMeshProObject);
         interactionComplete = true;
 
-        Quaternion startRotation = objectToRotate.transform.rotation;
-        Quaternion endRotation = Quaternion.Euler(0, 0, openAngle);
+        Vector3 startRotation = objectToRotate.transform.eulerAngles;
+        Vector3 endRotation = new Vector3(startRotation.x, startRotation.y, startRotation.z + openAngle);
+
         float timeElapsed = 0;
 
         while (timeElapsed < rotationTime)
         {
-            objectToRotate.transform.rotation = Quaternion.Slerp(startRotation, endRotation, timeElapsed / rotationTime);
+            // Calculate the next rotation frame
+            Vector3 nextRotation = new Vector3(
+                startRotation.x,
+                startRotation.y,
+                Mathf.Lerp(startRotation.z, endRotation.z, timeElapsed / rotationTime)
+            );
+
+            objectToRotate.transform.eulerAngles = nextRotation;
             timeElapsed += Time.deltaTime;
             yield return null;
         }
 
-        objectToRotate.transform.rotation = endRotation; 
+        objectToRotate.transform.eulerAngles = endRotation;
 
         // Enable the object and start the second timer
         objectToActivate.SetActive(true);

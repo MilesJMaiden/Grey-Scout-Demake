@@ -6,15 +6,14 @@ public class InvestigateState : IEnemyState
     private float lookAroundTimer;
     private float rotationSpeed = 60f;
     private bool isLookingLeft;
-    private Quaternion initialRotation; // Store the initial rotation for restoring later
+    private Quaternion initialRotation;
 
-    // Constructor with look around duration parameter
     public InvestigateState(Enemy enemyContext, float duration)
     {
         this.enemy = enemyContext;
         this.lookAroundTimer = duration;
         this.initialRotation = enemy.transform.rotation;
-        this.isLookingLeft = Random.value > 0.5f; // Randomly decide the initial direction of looking
+        this.isLookingLeft = Random.value > 0.5f;
     }
 
     public void EnterState(Enemy enemyContext)
@@ -30,11 +29,9 @@ public class InvestigateState : IEnemyState
         this.enemy = enemyContext;
         lookAroundTimer -= Time.deltaTime;
 
-        // Rotate the enemy to mimic the behavior of looking around
         float rotationAmount = rotationSpeed * Time.deltaTime * (isLookingLeft ? -1 : 1);
         enemy.transform.Rotate(0, rotationAmount, 0);
 
-        // Switch the looking direction at half the duration
         if (lookAroundTimer <= enemy.lookAroundDuration / 2)
         {
             isLookingLeft = !isLookingLeft;
@@ -51,8 +48,8 @@ public class InvestigateState : IEnemyState
     {
         Debug.Log("Exiting Investigate State");
         this.enemy = enemyContext;
-        enemy.transform.rotation = initialRotation; // Restore the enemy's rotation
-        enemy.navAgent.isStopped = false; // Allow the enemy to move again
+        enemy.transform.rotation = initialRotation;
+        enemy.navAgent.isStopped = false; 
         enemy.alertStateIndicator.SetActive(false);
     }
 }

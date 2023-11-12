@@ -27,8 +27,6 @@ public class Enemy : MonoBehaviour
     [SerializeField] public float maxChaseTime = 15f;
 
     [Header("Alert Settings")]
-    [Tooltip("The slider UI that represents the alert timer.")]
-    public Slider alertTimerSlider;
 
     [Tooltip("The indicator object that becomes active when the enemy is in an alert state.")]
     public GameObject alertStateIndicator;
@@ -90,7 +88,6 @@ public class Enemy : MonoBehaviour
 
     public SphereCollider killRangeCollider;
 
-    // Exposed property for lastKnownPlayerPosition
     public Vector3 LastKnownPlayerPosition
     {
         get => lastKnownPlayerPosition;
@@ -111,12 +108,16 @@ public class Enemy : MonoBehaviour
     {
         player = newPlayer;
 
-        // Optionally, reset the state machine if needed
         TransitionToState(new PatrolState());
     }
 
     private void Start()
     {
+        if (originPoint == Vector3.zero)
+        {
+            originPoint = transform.position;
+        }
+
         Initialize();
         TransitionToState(new PatrolState());
         alertStateIndicator.SetActive(false);
@@ -148,7 +149,7 @@ public class Enemy : MonoBehaviour
         }
         else
         {
-            navAgent.speed = 0f; // Set to default or another value if not patrolling.
+            navAgent.speed = 0f;
         }
 
         detectionCollider = GetComponentInChildren<SphereCollider>();
@@ -159,7 +160,6 @@ public class Enemy : MonoBehaviour
 
     public bool IsPlayerDetected()
     {
-        // Potentially perform detection logic here and update isPlayerDetected
         return isPlayerDetected;
     }
 
@@ -218,13 +218,11 @@ public class Enemy : MonoBehaviour
 
     public void InitializePatrol()
     {
-        // Set the initial patrol destination and speed
         navAgent.speed = patrolSpeed;
         SetRandomPatrolDestination();
     }
     public void ResetEnemy()
     {
-        // Reset the enemy's state to patrol at its origin point
         isPlayerDetected = false;
         navAgent.SetDestination(originPoint);
         navAgent.speed = patrolSpeed;
@@ -233,7 +231,7 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PlayerDetectionCollider")) // Make sure this tag matches your player's collider tag
+        if (other.CompareTag("PlayerDetectionCollider"))
         {
             ThirdPersonController thirdPersonController = other.GetComponentInParent<ThirdPersonController>();
             if (thirdPersonController != null)
@@ -241,15 +239,13 @@ public class Enemy : MonoBehaviour
                 isPlayerDetected = true;
                 lastKnownPlayerPosition = other.transform.position;
 
-                if (!thirdPersonController.IsHidden)
+                if (thirdPersonController.IsHidden)
                 {
-                    // Player is not hidden, chase immediately
-                    TransitionToState(new ChaseState());
+                    TransitionToState(new AlertState(this, alertThreshold, alertDetectionTime));
                 }
                 else
                 {
-                    // Player is hidden, go to alert state instead of investigate
-                    TransitionToState(new AlertState(this, alertLookDuration, alertDetectionTime));
+                    TransitionToState(new ChaseState());
                 }
             }
             else
@@ -258,15 +254,13 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        // Check if the colliding object is the player and within the kill range
         if (other.CompareTag("Player") && other == killRangeCollider)
         {
             ThirdPersonController playerController = other.GetComponentInParent<ThirdPersonController>();
             if (playerController != null)
             {
-                // Call a method to handle the player's death
                 playerController.Die();
-                // Reset enemy state after player dies
+                // Reset
                 ResetToOriginAndPatrol();
             }
             else
@@ -286,38 +280,33 @@ public class Enemy : MonoBehaviour
 
     void OnDrawGizmos()
     {
-        Vector3 gizmoPosition = transform.position + new Vector3(0, 1, 0); // Move Gizmos up by 1 on the y-axis
+        Vector3 gizmoPosition = transform.position + new Vector3(0, 1, 0);
 
-        // Draw the patrol range as a green wire sphere if patrolling
         if (CurrentState is PatrolState || CurrentState is AlertState)
         {
             Gizmos.color = Color.green;
             Gizmos.DrawWireSphere(originPoint + new Vector3(0, 1, 0), patrolRange);
         }
 
-        // Draw the player detection radius
-        // Use a different color if the player is currently detected or in chase mode
         if (CurrentState is ChaseState)
         {
-            Gizmos.color = new Color(1f, 0f, 0f, 0.3f); // Red for chase detection radius
+            Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
             Gizmos.DrawWireSphere(gizmoPosition, chaseDetectionRadius);
         }
         else if (isPlayerDetected)
         {
-            Gizmos.color = Color.yellow; // Yellow when player is detected but not chased
+            Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(gizmoPosition, playerDetectionRadius);
         }
         else
         {
-            Gizmos.color = Color.red; // Red when player is not detected
             Gizmos.DrawWireSphere(gizmoPosition, playerDetectionRadius);
         }
 
-        // If there's a last known player position, draw it as a blue sphere
         if (lastKnownPlayerPosition != Vector3.zero)
         {
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(lastKnownPlayerPosition + new Vector3(0, 1, 0), 0.5f); // Small sphere for position
+            Gizmos.DrawWireSphere(lastKnownPlayerPosition + new Vector3(0, 1, 0), 0.5f);
         }
     }
 }

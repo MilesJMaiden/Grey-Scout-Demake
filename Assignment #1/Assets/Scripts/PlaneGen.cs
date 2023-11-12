@@ -14,8 +14,8 @@ public class PlaneGen : MonoBehaviour
 
     public GameObject treePrefab;
     public float treeEdgeBuffer = 5f;
-    public float treeDistanceApart = 5f; // Distance between each tree
-    public float treeRandomDistanceOffset = 1f; // Random offset for tree placement
+    public float treeDistanceApart = 5f;
+    public float treeRandomDistanceOffset = 1f;
     public float forestEdgeWidth = 20f;
 
     public float planeSize = 250f;
@@ -23,7 +23,7 @@ public class PlaneGen : MonoBehaviour
     public Material shaderMaterial;
     public Transform player;
 
-    public bool showGizmos = true; // Toggle this in the inspector to show or hide gizmos
+    public bool showGizmos = true;
     public Color grassGizmoColor = Color.green;
     public Color treeGizmoColor = Color.yellow;
 
@@ -67,7 +67,7 @@ public class PlaneGen : MonoBehaviour
     {
         // Create a master container for all grass area containers
         GameObject masterGrassContainer = new GameObject("MasterGrassContainer");
-        masterGrassContainer.transform.SetParent(transform, false); // Set as child of the plane
+        masterGrassContainer.transform.SetParent(transform, false);
 
         foreach (GrassArea grassArea in grassAreas)
         {
@@ -90,8 +90,8 @@ public class PlaneGen : MonoBehaviour
 
         // Create a new container GameObject for this grass area
         GameObject grassAreaContainer = new GameObject("GrassAreaContainer_" + grassArea.originPoint);
-        grassAreaContainer.transform.SetParent(masterGrassContainer.transform, false); // Set as child of the master container
-        grassAreaContainer.transform.localPosition = centerPosition - new Vector3(0, 0, 0); // Adjust local position relative to the master container
+        grassAreaContainer.transform.SetParent(masterGrassContainer.transform, false);
+        grassAreaContainer.transform.localPosition = centerPosition; 
 
         int grassCountX = Mathf.CeilToInt(grassArea.areaSize.x / distanceApart);
         int grassCountZ = Mathf.CeilToInt(grassArea.areaSize.y / distanceApart);
@@ -116,10 +116,10 @@ public class PlaneGen : MonoBehaviour
             }
         }
 
-        // Add and configure the box collider for this grass area
+        // Add and configure a single box collider for this grass area
         BoxCollider areaCollider = grassAreaContainer.AddComponent<BoxCollider>();
-        areaCollider.size = new Vector3(grassArea.areaSize.x, tallestGrass, grassArea.areaSize.y);
-        areaCollider.center = new Vector3(0, tallestGrass / 2, 0); // Adjust collider center
+        areaCollider.size = new Vector3(grassArea.areaSize.x + 0.25f, tallestGrass, grassArea.areaSize.y + 0.25f);
+        areaCollider.center = new Vector3(0, tallestGrass / 2, 0);
         areaCollider.isTrigger = true;
         areaCollider.tag = "HideZone";
     }
@@ -128,9 +128,8 @@ public class PlaneGen : MonoBehaviour
     {
         // Create a container for the trees
         GameObject treeContainer = new GameObject("TreeContainer");
-        treeContainer.transform.parent = transform; // Set the plane as the parent
+        treeContainer.transform.parent = transform;
 
-        // Assuming the size of the plane is 250 x 250 in world units.
         // Calculate the bounds of the plane
         float halfPlaneSize = planeSize / 2;
         float minX = transform.position.x - halfPlaneSize;
@@ -156,10 +155,9 @@ public class PlaneGen : MonoBehaviour
                 {
                     Vector3 treePosition = new Vector3(
                         x + Random.Range(-treeRandomDistanceOffset, treeRandomDistanceOffset),
-                        0, // Assuming the ground is at y = 0
+                        0,
                         z + Random.Range(-treeRandomDistanceOffset, treeRandomDistanceOffset)
                     );
-                    // Instantiate the tree as a child of the tree container
                     GameObject tree = Instantiate(treePrefab, treePosition, Quaternion.identity, treeContainer.transform);
                 }
             }
@@ -170,12 +168,10 @@ public class PlaneGen : MonoBehaviour
     {
         if (!showGizmos) return;
 
-        // Draw the border area where trees will be instantiated
         Gizmos.color = treeGizmoColor;
         Gizmos.DrawWireCube(transform.position, new Vector3(planeSize - 2 * forestEdgeWidth, 1f, planeSize - 2 * forestEdgeWidth));
 
-        // Draw the inner area to show where trees won't be placed
-        Gizmos.color = new Color(0, 1, 0, 0.5f); // Semi-transparent green
+        Gizmos.color = new Color(0, 1, 0, 0.5f);
         Gizmos.DrawWireCube(transform.position, new Vector3(planeSize - 2 * (forestEdgeWidth + treeEdgeBuffer), 1f, planeSize - 2 * (forestEdgeWidth + treeEdgeBuffer)));
 
         // Draw gizmos for grass areas
@@ -200,7 +196,7 @@ public class PlaneGen : MonoBehaviour
                     );
 
                     Vector3 gizmoPosition = startGizmoPosition + positionOffset;
-                    Gizmos.DrawWireCube(gizmoPosition, new Vector3(1, tallestGrass, 1) * 0.1f); // Scale down the gizmo representation
+                    Gizmos.DrawWireCube(gizmoPosition, new Vector3(1, tallestGrass, 1) * 0.1f);
                 }
             }
         }

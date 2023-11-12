@@ -62,18 +62,17 @@ public class Captive : MonoBehaviour
     [Header("Rescue Settings")]
 
     [SerializeField] private bool isRescued = false;
-    private List<Captive> captivesInRange = new List<Captive>();
+    public List<Captive> captivesInRange = new List<Captive>();
 
 	private void Awake()
 	{
-		// Ensure the captive has the required interaction zone (SphereCollider).
 		if (!interactionZone)
 		{
 			Debug.LogError("Captive is missing a SphereCollider component for the interaction zone.");
-			this.enabled = false; // Disable the script if there's no SphereCollider.
+			enabled = false;
 			return;
 		}
-		interactionZone.isTrigger = true; // Ensure the SphereCollider is set as a trigger.
+		interactionZone.isTrigger = true;
 	}
 
 	private void Start()
@@ -89,20 +88,14 @@ public class Captive : MonoBehaviour
 
 	private void InitializeCaptive()
 	{
-		// UI setup
 		interactionText.SetActive(false);
-
-		// Find and assign player transform
 		playerTransform = GameObject.FindGameObjectWithTag("PlayerDetectionCollider").transform;
 
-		// Setup NavMesh agent
 		navAgent = GetComponent<NavMeshAgent>();
 		SetupNavMeshAgent();
 
-		// Set original follow distance
 		originalFollowDistance = followDistance;
 
-		// Start sight and distance checks if following
 		if (isFollowing)
 		{
 			StartCoroutine(SightAndDistanceChecks());
@@ -112,8 +105,8 @@ public class Captive : MonoBehaviour
 	private void SetupNavMeshAgent()
 	{
 		navAgent.stoppingDistance = 1f;
-		navAgent.acceleration = 8f; // Increase acceleration for smoother movement
-		navAgent.angularSpeed = 120f; // Decrease angular speed for smoother rotations
+		navAgent.acceleration = 8f;
+		navAgent.angularSpeed = 120f;
 	}
 
 	private void HandleCaptiveRotation()
@@ -121,9 +114,9 @@ public class Captive : MonoBehaviour
 		if (!isFollowing) return;
 
 		Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
-		directionToPlayer.y = 0; // Keep the captive level and only rotate around the y-axis
+		directionToPlayer.y = 0;
 		Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
-		transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 3f); // Reduced from 5f
+		transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 3f);
 	}
 
 	private enum CaptiveState
@@ -132,57 +125,52 @@ public class Captive : MonoBehaviour
 		Following
 	}
 
-	//private CaptiveState currentState = CaptiveState.Idle;
+    private IEnumerator SightAndDistanceChecks()
+    {
+        while (isFollowing)
+        {
+            // The desired position is directly a followDistance behind the player's current position.
+            Vector3 desiredPosition = playerTransform.position - playerTransform.forward * followDistance;
+            Vector3 directionToDesiredPosition = (desiredPosition - transform.position).normalized;
 
-	private IEnumerator SightAndDistanceChecks()
-	{
+            navAgent.SetDestination(desiredPosition);
 
-		while (isFollowing)
-		{
-			Transform followTarget = GetFollowTarget();
-			Vector3 directionToFollowTarget = (followTarget.position - transform.position).normalized;
-			Vector3 followPosition = followTarget.position - followTarget.forward * followDistance;
+            // Rotate the captive to face the player while following
+            Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+            directionToPlayer.y = 0;
+            Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 2f);
 
-			Vector3 directionToPlayer = (playerTransform.position - transform.position).normalized;
+            // Check distance to the player. If too far, stop following
+            if (Vector3.Distance(transform.position, playerTransform.position) > maxFollowDistance)
+            {
+                ToggleFollow();
+                yield break;
+            }
 
-			navAgent.SetDestination(followPosition);
+            // Perform a line-of-sight check.
+            RaycastHit hit;
+            if (Physics.Linecast(transform.position + Vector3.up, playerTransform.position, out hit))
+            {
+                if (hit.collider.CompareTag("Player"))
+                {
+                    timeOutOfSight = 0;
+                }
+                else
+                {
+                    timeOutOfSight += Time.deltaTime;
+                }
+            }
 
-			// Ensure the captive is always facing the player.
-			directionToPlayer.y = 0; // Keep the captive level and only rotate around the y-axis
-			Quaternion lookRotation = Quaternion.LookRotation(directionToPlayer);
-			transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * 2f);
+            if (timeOutOfSight >= timeToLoseSight)
+            {
+                ToggleFollow();
+                yield break;
+            }
 
-			// Check if the player has moved too far away from the captive.
-			if (Vector3.Distance(transform.position, playerTransform.position) > maxFollowDistance)
-			{
-				ToggleFollow();
-				yield break;
-			}
-
-			// Check for line of sight.
-			Vector3 rayOrigin = transform.position + Vector3.up * 0.5f;
-			RaycastHit hit;
-			if (Physics.Raycast(rayOrigin, (playerTransform.position - rayOrigin).normalized, out hit))
-			{
-				if (hit.transform.CompareTag("PlayerDetectionCollider"))
-				{
-					timeOutOfSight = 0;
-				}
-				else
-				{
-					timeOutOfSight += 0.1f;
-				}
-			}
-
-			if (timeOutOfSight >= timeToLoseSight)
-			{
-				ToggleFollow();
-				yield break;
-			}
-
-			yield return new WaitForSeconds(0.1f);
-		}
-	}
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
 
     public void RescueCaptive()
     {
@@ -190,13 +178,12 @@ public class Captive : MonoBehaviour
         {
             isRescued = true;
             isFollowing = false;
-            navAgent.isStopped = true; // Stop the NavMeshAgent
-            navAgent.enabled = false; // Disable the NavMeshAgent to stop all movement
+            navAgent.isStopped = true;
+            navAgent.enabled = false;
             thirdPersonController.RemoveCaptive(this);
-            gameObject.SetActive(false); // Hide the captive
+            gameObject.SetActive(false);
 
-            // Update the score or handle any effects related to the rescue
-            GameManager.Instance.AddScore(1); // Assuming you have a method to update the score
+            GameManager.Instance.AddScore(1);
         }
     }
 
@@ -204,13 +191,12 @@ public class Captive : MonoBehaviour
 	{
 		if (other.CompareTag("PlayerDetectionCollider"))
 		{
-			// Add this captive to the list of captives in range of the player.
+			// Add this captive to the list of captives
 			playerInteraction.AddCaptiveInRange(this);
 		}
 
         if (other.CompareTag("ScoreZone"))
         {
-            // The captive has entered the score zone
             RescueCaptive();
         }
     }
@@ -219,10 +205,7 @@ public class Captive : MonoBehaviour
 	{
 		if (other.CompareTag("PlayerDetectionCollider"))
 		{
-			// Remove this captive from the list of captives in range.
 			playerInteraction.RemoveCaptiveInRange(this);
-
-			// Also, make sure to hide the interaction text if the player is no longer in range.
 			HideInteractionText();
 		}
 	}
@@ -230,7 +213,7 @@ public class Captive : MonoBehaviour
 	public void ToggleFollow()
 	{
 		isFollowing = !isFollowing;
-		timeOutOfSight = 0;  // Reset the out of sight timer
+		timeOutOfSight = 0;  // Reset
 
 		if (isFollowing)
 		{
@@ -249,7 +232,6 @@ public class Captive : MonoBehaviour
 	public void ShowInteractionText()
 	{
 		interactionText.SetActive(true);
-		//interactionText.text = "Press E to Interact";
 	}
 
 	public void HideInteractionText()
@@ -281,7 +263,6 @@ public class Captive : MonoBehaviour
 	}
     private void DisableCaptive()
     {
-        // Disable all captive behaviors here
         enabled = false;
         navAgent.enabled = false;
         // Hide captive or move it to a non-interactive layer

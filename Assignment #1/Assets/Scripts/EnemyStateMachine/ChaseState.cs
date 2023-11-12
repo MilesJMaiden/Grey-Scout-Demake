@@ -4,14 +4,14 @@ using UnityEngine.AI;
 public class ChaseState : IEnemyState
 {
     private Enemy enemy;
-    private float chaseTimer; // Consider if you want a time limit for how long the enemy can chase
+    private float chaseTimer;
 
     public void EnterState(Enemy enemyContext)
     {
         Debug.Log("Entering Chase State");
         this.enemy = enemyContext;
         enemy.navAgent.speed = enemy.chaseSpeed;
-        chaseTimer = enemy.maxChaseTime; // If you want a timer, initialize it here
+        chaseTimer = enemy.maxChaseTime;
         enemy.detectionCollider.radius = enemy.chaseDetectionRadius;
         enemy.chaseStateIndicator.SetActive(true);
     }
@@ -24,33 +24,23 @@ public class ChaseState : IEnemyState
         if (thirdPersonController == null)
         {
             Debug.LogError("Player script not found on the enemy's target player.");
-            return; // Stop execution if the player script is not found
+            return;
         }
 
         if (enemyContext.player == null)
         {
-            // Handle the case where the player has been destroyed
             Debug.LogWarning("Player object is missing, transitioning to PatrolState.");
             enemyContext.TransitionToState(new PatrolState());
             return;
         }
 
-        // Check if the player is within chase limit
-        //if (!enemy.IsPlayerWithinChaseLimit(enemy.player.transform.position, enemy.chaseLimit))
-        //{
-        //    Debug.Log("Player out of chase limit. Considering returning to patrol or investigating.");
-        //    enemy.TransitionToState(new InvestigateState(enemy, enemy.lookAroundDuration)); // or PatrolState
-        //    return;
-        //}
-
-        // If there is a chase timer, count down and transition states if needed
         if (chaseTimer > 0)
         {
             chaseTimer -= Time.deltaTime;
             if (chaseTimer <= 0)
             {
                 Debug.Log("Chase timer expired. Considering what to do next.");
-                enemy.TransitionToState(new InvestigateState(enemy, enemy.lookAroundDuration)); // or PatrolState
+                enemy.TransitionToState(new InvestigateState(enemy, enemy.lookAroundDuration));
                 return;
             }
         }
@@ -77,9 +67,7 @@ public class ChaseState : IEnemyState
     public void ExitState(Enemy enemyContext)
     {
         enemy = enemyContext;
-        enemy.detectionCollider.radius = enemy.originalDetectionRadius; // Restore the detection radius
+        enemy.detectionCollider.radius = enemy.originalDetectionRadius; // reset
         enemy.chaseStateIndicator.SetActive(false);
-
-        // Consider what to do when exiting chase state. Do you need to reset any variables or timers?
     }
 }

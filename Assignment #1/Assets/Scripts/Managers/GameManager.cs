@@ -25,6 +25,11 @@ public class GameManager : MonoBehaviour
     public bool isGamePaused = false;
     public GameObject pauseMenuUI;
 
+    [Header("Timer")]
+    public float totalTime = 300f;
+    private float timeRemaining;
+    public TextMeshProUGUI timeText;
+
     private void Awake()
     {
         if (Instance == null)
@@ -41,6 +46,9 @@ public class GameManager : MonoBehaviour
     {
         UpdateScoreText();
         UpdateLivesText();
+
+        timeRemaining = totalTime;
+        UpdateTimeText();
     }
 
     private void Update()
@@ -56,19 +64,49 @@ public class GameManager : MonoBehaviour
                 PauseGame();
             }
         }
+
+        // Timer countdown logic
+        if (!isGamePaused)
+        {
+            if (timeRemaining > 0)
+            {
+                timeRemaining -= Time.deltaTime;
+                UpdateTimeText();
+            }
+            else
+            {
+                TimeExpired();
+            }
+        }
     }
+
+    private void UpdateTimeText()
+    {
+        if (timeText != null)
+        {
+            TimeSpan timeSpan = TimeSpan.FromSeconds(timeRemaining);
+            timeText.text = string.Format("Time: {0:D2}:{1:D2}", timeSpan.Minutes, timeSpan.Seconds);
+        }
+    }
+
+    private void TimeExpired()
+    {
+        Debug.Log("Time's up!");
+        GameOver();
+    }
+
 
     public void PauseGame()
     {
-        pauseMenuUI.SetActive(true); // Activate the pause menu UI
-        Time.timeScale = 0f; // Freeze the game time
+        pauseMenuUI.SetActive(true); 
+        Time.timeScale = 0f; 
         isGamePaused = true;
     }
 
     public void ResumeGame()
     {
-        pauseMenuUI.SetActive(false); // Deactivate the pause menu UI
-        Time.timeScale = 1f; // Resume the game time
+        pauseMenuUI.SetActive(false); 
+        Time.timeScale = 1f; 
         isGamePaused = false;
     }
 

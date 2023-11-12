@@ -11,8 +11,6 @@ public class ThirdPersonController : MonoBehaviour
 	public float gravity = -9.81f;
 	private Vector3 velocity;
 
-
-
 	// ----------------------- COMPONENT REFERENCES -----------------------
 	private CharacterController characterController;
     public GameObject characterModel;
@@ -20,7 +18,7 @@ public class ThirdPersonController : MonoBehaviour
     public PlayerInteraction playerInteraction;
 
     // ----------------------- PLAYER PREFERENCES -----------------------
-    private Transform capsuleMeshTransform;
+    public Transform capsuleMeshTransform;
 	private float originalControllerHeight;
 	private Vector3 originalControllerCenter;
 	private float originalCapsuleMeshScaleY;
@@ -164,7 +162,7 @@ public class ThirdPersonController : MonoBehaviour
 
     Coroutine fadeCoroutine;
 
-	private List<Captive> captives = new List<Captive>();
+	public List<Captive> captives = new List<Captive>();
 	public const int maxCaptives = 3;
 
 	// ------------------- PLAYER DETECTION SETTINGS --------------------
@@ -185,8 +183,11 @@ public class ThirdPersonController : MonoBehaviour
     [Tooltip("Reference to the SphereCollider that manages player detection range.")]
     [SerializeField] public SphereCollider interactionCollider;
 
-    [Tooltip("Flag for if the player is hidden")]
-    public bool IsHidden;
+    private int hideZoneCounter = 0;
+
+    [SerializeField]
+    private bool isHidden;
+
 
     // ----------------------- GIZMO SETTINGS -----------------------
     [Header("Gizmo Settings")]
@@ -232,12 +233,12 @@ public class ThirdPersonController : MonoBehaviour
         }
 
         AdjustDetectionCollider();
-	}
+        CheckHiddenState();
+    }
     public void SetCamera(Transform newCameraTransform)
     {
         cameraTransform = newCameraTransform;
     }
-
 
     public void OnMove(InputAction.CallbackContext context)
 	{
@@ -365,7 +366,7 @@ public class ThirdPersonController : MonoBehaviour
         else if (wasSprintingWhenJumped && !isSprinting)
         {
             currentMoveSpeed = originalMoveSpeed; // Reset
-            wasSprintingWhenJumped = false; // Rese
+            wasSprintingWhenJumped = false; // Reset
         }
         else if (isSprinting)
         {
@@ -378,7 +379,15 @@ public class ThirdPersonController : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);
 
-        if (moveDirection != Vector3.zero)
+        bool isMoving = moveDirection.magnitude > 0.1f;
+
+        // Enable or disable the moving object based on the isMoving flag
+        if (VFXContainer != null)
+        {
+            VFXContainer.SetActive(isMoving);
+        }
+
+        if (isMoving)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             characterModel.transform.rotation = Quaternion.Slerp(characterModel.transform.rotation, targetRotation, Time.deltaTime * 5f);
@@ -422,7 +431,6 @@ public class ThirdPersonController : MonoBehaviour
 			autoCrouch = true;
 			jumpedWhileCrouching = true;
 			velocity.y = Mathf.Sqrt(jumpHeight * crouchJumpMultiplier * -2f * gravity);
-			//StopCrouch(); // Automatically stop crouching when jumping from a crouched state
 		}
 		else
 		{
@@ -728,6 +736,27 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
+    public bool IsHidden
+    {
+        get => isHidden;
+        private set => isHidden = value;
+    }
+
+    private void UpdateHiddenState()
+    {
+        IsHidden = hideZoneCounter > 0;
+    }
+
+    private void CheckHiddenState()
+    {
+
+        bool shouldBeHidden = hideZoneCounter > 0;
+        if (IsHidden != shouldBeHidden)
+        {
+            UpdateHiddenState();
+        }
+    }
+
     public void Die()
     {
         GameManager.Instance.LoseLife();
@@ -742,11 +771,12 @@ public class ThirdPersonController : MonoBehaviour
     }
 
     private void OnTriggerEnter(Collider other)
-	{
-		if (other.CompareTag("HideZone"))
-		{
-			IsHidden = true;
-		}
+    {
+        if (other.CompareTag("HideZone"))
+        {
+            hideZoneCounter++;
+            UpdateHiddenState();
+        }
 
         if (other.CompareTag("KillRangeCollider"))
         {
@@ -754,13 +784,14 @@ public class ThirdPersonController : MonoBehaviour
         }
     }
 
-	private void OnTriggerExit(Collider other)
-	{
-		if (other.CompareTag("HideZone"))
-		{
-			IsHidden = false;
-		}
-	}
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("HideZone"))
+        {
+            hideZoneCounter = Mathf.Max(0, hideZoneCounter - 1);  // Ensure the counter never goes below 0
+            UpdateHiddenState();
+        }
+    }
 
     private void OnDrawGizmos()
     {

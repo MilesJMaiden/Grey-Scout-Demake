@@ -2,8 +2,7 @@ public class PatrolState : IEnemyState
 {
     public void EnterState(Enemy enemy)
     {
-        // Reset detection radius to its original value when patrolling
-        enemy.navAgent.speed = enemy.patrolSpeed; // Ensure the nav agent is set to patrol speed
+        enemy.navAgent.speed = enemy.patrolSpeed;
         enemy.InitializePatrol();
         enemy.detectionCollider.radius = enemy.originalDetectionRadius;
         enemy.alertStateIndicator.SetActive(false);
@@ -36,10 +35,9 @@ public class PatrolState : IEnemyState
 
     public void ExitState(Enemy enemy)
     {
-        // Any logic needed when exiting the patrol state
+        
     }
 
-    // Method to initialize the patrol
     private void InitializePatrol(Enemy enemy)
     {
         enemy.SetRandomPatrolDestination();

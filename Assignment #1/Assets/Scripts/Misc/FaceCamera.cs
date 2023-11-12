@@ -11,8 +11,8 @@ public class FaceCamera : MonoBehaviour
 
 	private void Update()
 	{
-		Vector3 direction = transform.position - mainCamera.transform.position; // Flipped this line
-		direction.y = 0; // Zero out the Y component
+		Vector3 direction = transform.position - mainCamera.transform.position;
+		//direction.y = 0; // Zero out the Y component
 
 		transform.rotation = Quaternion.LookRotation(direction);
 	}
