@@ -219,6 +219,7 @@ MonoBehaviour:
   maxFollowDistance: 20
   timeToLoseSight: 10
   isRescued: 0
+  captivesInRange: []
 --- !u!54 &5901211222943247352
 Rigidbody:
   m_ObjectHideFlags: 0

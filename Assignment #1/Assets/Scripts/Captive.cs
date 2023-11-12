@@ -193,6 +193,7 @@ public class Captive : MonoBehaviour
 		{
 			// Add this captive to the list of captives
 			playerInteraction.AddCaptiveInRange(this);
+			ShowInteractionText();
 		}
 
         if (other.CompareTag("ScoreZone"))

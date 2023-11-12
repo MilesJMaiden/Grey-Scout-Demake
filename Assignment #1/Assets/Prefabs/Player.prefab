@@ -2188,7 +2188,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 645
+  m_VersionIndex: 648
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -4572,7 +4572,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 645
+  m_VersionIndex: 648
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -10190,7 +10190,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 3133
+  m_VersionIndex: 3136
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -12558,7 +12558,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 684
+  m_VersionIndex: 687
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -12882,14 +12882,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravity: -9.81
-  capsuleMeshTransform: {fileID: 2508290398335484796}
   characterModel: {fileID: 4468716234827590314}
+  VFXContainer: {fileID: 9138309863804962530}
+  playerInteraction: {fileID: 521337334615650104}
+  capsuleMeshTransform: {fileID: 2508290398335484796}
   cameraTransform: {fileID: 0}
   cameraTarget: {fileID: 8353251176369858724}
   cameraDistance: 5
   lookSpeed: 1
   moveSpeed: 5
-  VFXContainer: {fileID: 9138309863804962530}
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -12907,7 +12908,6 @@ MonoBehaviour:
   sprintInitiationCost: 0.5
   staminaRegenRate: 1
   holdToSprint: 1
-  playerInteraction: {fileID: 521337334615650104}
   staminaUICanvasGroup: {fileID: 295371743962712294}
   delayBeforeFade: 1
   staminaSlider: {fileID: 1403231594019710442}
@@ -12917,9 +12917,9 @@ MonoBehaviour:
   crouchDetectionRadius: 3
   detectionCollider: {fileID: 1910821159979517882}
   interactionCollider: {fileID: 4455068420236113245}
+  isHidden: 0
   showDetectionRadiusGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0, a: 1}
-  IsHidden: 0
 --- !u!114 &521337334615650104
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12953,7 +12953,7 @@ CharacterController:
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.5
-  m_SlopeLimit: 45
+  m_SlopeLimit: 85
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
@@ -13324,7 +13324,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 3133
+  m_VersionIndex: 3136
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -15757,7 +15757,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 684
+  m_VersionIndex: 687
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
