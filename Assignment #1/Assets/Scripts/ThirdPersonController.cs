@@ -15,15 +15,15 @@ public class ThirdPersonController : MonoBehaviour
 
 	// ----------------------- COMPONENT REFERENCES -----------------------
 	private CharacterController characterController;
+    public GameObject characterModel;
+    public GameObject VFXContainer;
+    public PlayerInteraction playerInteraction;
 
-	// ----------------------- PLAYER PREFERENCES -----------------------
-	[Tooltip("The transform of the capsule mesh. Assign in Inspector.")]
-	public Transform capsuleMeshTransform;
+    // ----------------------- PLAYER PREFERENCES -----------------------
+    private Transform capsuleMeshTransform;
 	private float originalControllerHeight;
 	private Vector3 originalControllerCenter;
 	private float originalCapsuleMeshScaleY;
-
-    public GameObject characterModel;
 
     // ----------------------- CAMERA SETTINGS -----------------------
     [Tooltip("Reference to the main camera's transform.")]
@@ -44,27 +44,32 @@ public class ThirdPersonController : MonoBehaviour
 	[Header("Movement")]
 	[Tooltip("Player's base movement speed.")]
 	public float moveSpeed = 3.0f;
+
 	private Vector2 moveInput;
 	private Vector3 lastGroundedMoveDirection = Vector3.zero;
 	private float originalMoveSpeed;
-	public GameObject VFXContainer;
+
 
 	// ----------------------- GROUND CHECK -----------------------
 	[Header("Ground")]
+
 	[Tooltip("LayerMask that defines what is considered ground.")]
 	public LayerMask groundLayer;
 
 	[Tooltip("GameObject used to check if player is grounded.")]
 	public GameObject groundCheck;
+
 	private bool wasGroundedLastFrame;
 
 	// ----------------------- JUMP SETTINGS -----------------------
 	[Header("Jumping")]
+
 	[Tooltip("Initial jump height when player jumps.")]
 	public float jumpHeight = 2.0f;
 
 	[Tooltip("Distance to check below player to determine if they are on the ground.")]
 	public float groundCheckDistance = 0.1f;
+
 	private bool jumpedWhileCrouching = false;
 
 	[Tooltip("Movement speed when player crouches in mid-air.")]
@@ -72,18 +77,24 @@ public class ThirdPersonController : MonoBehaviour
 
 	// ----------------------- DOUBLE JUMP SETTINGS -----------------------
 	[Header("Double Jumping")]
+
 	[Tooltip("Enable or disable double jumping for the player.")]
 	public bool enableDoubleJump = true;
+
 	private bool isDoubleJumping = false;
 
 	[Tooltip("Maximum number of times player can jump before touching the ground.")]
 	public int maxJumpCount = 2;
+
 	private int jumpCount = 0;
+
 	private Vector3 doubleJumpDirection = Vector3.zero;
+
 	private float originalJumpHeight;
 
 	// ----------------------- CROUCH SETTINGS -----------------------
 	[Header("Crouching")]
+
 	[Tooltip("If true, toggles crouching state on/off with button press. If false, player must hold button to remain crouched.")]
 	public bool isToggleCrouch = true;
 
@@ -92,50 +103,68 @@ public class ThirdPersonController : MonoBehaviour
 
 	[Tooltip("Multiplier applied to jump height when player jumps from crouched position.")]
 	public float crouchJumpMultiplier = 1.5f;
+
 	private bool isCrouching = false;
 
 	[Tooltip("Multiplier to adjust player height when crouching.")]
 	public float crouchHeightMultiplier = 0.5f;
+
 	private bool autoCrouch = false;
 
 	// ----------------------- SPRINT SETTINGS -----------------------
 	[Header("Sprinting")]
+
 	[Tooltip("Factor by which the player's speed is increased while sprinting.")]
 	public float sprintMultiplier = 2.0f;
+
 	[Tooltip("Duration (in seconds) for which the player can continuously sprint.")]
 	public float maxStamina = 5.0f;
+
 	[Tooltip("Stamina depletion rate per second while sprinting.")]
 	public float staminaDepletionRate = 1.0f;
+
 	[Tooltip("Stamina cost when initiating sprint.")]
 	public float sprintInitiationCost = 0.5f;
+
 	[Tooltip("Rate at which stamina regenerates when not sprinting.")]
 	public float staminaRegenRate = 0.5f;
+
 	[Tooltip("Should the player hold to sprint or toggle with button press.")]
 	public bool holdToSprint = true;
+
 	private float currentStamina;
 	private bool isSprinting = false;
-	[Tooltip("UI slider that represents player's stamina.")]
 	private bool wasSprintingWhenJumped = false;
     private bool canSprint = true;
 
-    public PlayerInteraction playerInteraction;
-
 	// ----------------------- PLAYER UI SETTINGS -----------------------
 	[Header("Player UI")]
-    [SerializeField] private CanvasGroup staminaUICanvasGroup;  // Drag the CanvasGroup from StaminaUIContainer to this field in the Inspector
-    private float staminaUIFadeDelay = 3f;  // Time (in seconds) after which the stamina UI will start to fade out once stamina is fully recharged.
 
-    private float fadeDuration = 1.0f;  // Time taken to fade out the UI
-    private float staminaUITimer = 0f;  // Time since the player stopped using stamina
-    public float delayBeforeFade = 3.0f;  // Defaulted to 3 seconds. You can change this in the Unity editor.
+    [SerializeField] private CanvasGroup staminaUICanvasGroup;
+    [Tooltip("Time (in seconds) after which the stamina UI will start to fade out once stamina is fully recharged.")]
+    private float staminaUIFadeDelay = 3f;
 
-    private bool isUIFading = false; // Track if UI is currently in the process of fading
-    private bool shouldDisplayUI = false;  // Track if the UI should be shown
+    [Tooltip("Time taken to fade out the UI")]
+    private float fadeDuration = 1.0f;
 
+    [Tooltip("Time since the player stopped using stamina")]
+    private float staminaUITimer = 0f;
+
+    [Tooltip("Time Until fade begins")]
+    public float delayBeforeFade = 3.0f;
+
+    [Tooltip("Track if UI is currently in the process of fading")]
+    private bool isUIFading = false;
+
+    [Tooltip("Track if the UI should be shown")]
+    private bool shouldDisplayUI = false;
+
+    [Tooltip("UI slider that represents player's stamina.")]
     public Slider staminaSlider;
+
     Coroutine fadeCoroutine;
 
-	public List<Captive> captives = new List<Captive>();
+	private List<Captive> captives = new List<Captive>();
 	public const int maxCaptives = 3;
 
 	// ------------------- PLAYER DETECTION SETTINGS --------------------
@@ -156,12 +185,17 @@ public class ThirdPersonController : MonoBehaviour
     [Tooltip("Reference to the SphereCollider that manages player detection range.")]
     [SerializeField] public SphereCollider interactionCollider;
 
+    [Tooltip("Flag for if the player is hidden")]
+    public bool IsHidden;
+
     // ----------------------- GIZMO SETTINGS -----------------------
     [Header("Gizmo Settings")]
-    public bool showDetectionRadiusGizmo = true;  // Flag to toggle the gizmo on/off
-    public Color gizmoColor = Color.red;  // Color of the gizmo
 
-    public bool IsHidden;
+    [Tooltip("Flag to toggle the gizmo on/off")]
+    public bool showDetectionRadiusGizmo = true;
+
+    [Tooltip("Color of the gizmo")]
+    public Color gizmoColor = Color.red;
 
 	void Awake()
 	{
@@ -289,11 +323,10 @@ public class ThirdPersonController : MonoBehaviour
 
 	public void OnSprint(InputAction.CallbackContext context)
 	{
-		Debug.Log("Sprinting...");
-		// When the sprint action starts
+		//Debug.Log("Sprinting...");
+
 		if (context.started)
 		{
-			// Check if we're holding to sprint or toggling
 			if (holdToSprint)
 			{
 				// Begin sprinting
@@ -307,10 +340,8 @@ public class ThirdPersonController : MonoBehaviour
 					StartSprint();
 			}
 		}
-		//(button/key is released)
 		else if (context.canceled && holdToSprint)
 		{
-			// Stop sprinting
 			StopSprint();
 		}
 	}
@@ -324,32 +355,29 @@ public class ThirdPersonController : MonoBehaviour
     {
         float currentMoveSpeed = originalMoveSpeed;
 
-        // Determine the direction of movement
+        // Direction of movement
         Vector3 moveDirection = (IsGrounded() || isDoubleJumping) ? GetMoveDirection() : lastGroundedMoveDirection;
 
-        // Apply crouching or sprinting speed modifiers
         if (isCrouching)
         {
             currentMoveSpeed = crouchSpeed;
         }
-        else if (wasSprintingWhenJumped && !isSprinting) // If player was sprinting but released sprint button before landing
+        else if (wasSprintingWhenJumped && !isSprinting)
         {
-            currentMoveSpeed = originalMoveSpeed; // Reset to default move speed
-            wasSprintingWhenJumped = false; // Reset the flag
+            currentMoveSpeed = originalMoveSpeed; // Reset
+            wasSprintingWhenJumped = false; // Rese
         }
         else if (isSprinting)
         {
             currentMoveSpeed = originalMoveSpeed * sprintMultiplier;
         }
 
-        // Move the character controller
         characterController.Move(moveDirection * currentMoveSpeed * Time.deltaTime);
 
         // Apply gravity
         velocity.y += gravity * Time.deltaTime;
         characterController.Move(velocity * Time.deltaTime);
 
-        // Rotate the character model to face the direction of movement
         if (moveDirection != Vector3.zero)
         {
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
@@ -376,13 +404,12 @@ public class ThirdPersonController : MonoBehaviour
 		cameraTransform.RotateAround(cameraTarget.transform.position, Vector3.up, lookInput.x * lookSpeed);
 
 		cameraVerticalAngle -= lookInput.y * lookSpeed;
-		cameraVerticalAngle = Mathf.Clamp(cameraVerticalAngle, -30f, 60f);
+		cameraVerticalAngle = Mathf.Clamp(cameraVerticalAngle, -20f, 60f);
 
 		Vector3 rotationEuler = cameraTransform.eulerAngles;
 		rotationEuler.x = cameraVerticalAngle;
 		cameraTransform.eulerAngles = rotationEuler;
 
-		// Keep the camera at a fixed distance from the target
 		cameraTransform.position = cameraTarget.transform.position - cameraTransform.forward * cameraDistance;
 	}
 
@@ -452,11 +479,9 @@ public class ThirdPersonController : MonoBehaviour
 	{
 		isCrouching = true;
 
-		// Adjust the CharacterController
 		characterController.height = originalControllerHeight * crouchHeightMultiplier;
 		characterController.center = new Vector3(originalControllerCenter.x, originalControllerCenter.y * crouchHeightMultiplier, originalControllerCenter.z);
 
-		// Adjust the capsule mesh Y scale only
 		Vector3 newScale = capsuleMeshTransform.localScale;
 		newScale.y = originalCapsuleMeshScaleY * crouchHeightMultiplier;
 		capsuleMeshTransform.localScale = newScale;
@@ -470,11 +495,11 @@ public class ThirdPersonController : MonoBehaviour
 		{
 			isCrouching = false;
 
-			// Reset the CharacterController to original sizes
+			// Reset
 			characterController.height = originalControllerHeight;
 			characterController.center = originalControllerCenter;
 
-			// Reset the capsule mesh Y scale
+			// Reset
 			Vector3 newScale = capsuleMeshTransform.localScale;
 			newScale.y = originalCapsuleMeshScaleY;
 			capsuleMeshTransform.localScale = newScale;
@@ -534,7 +559,7 @@ public class ThirdPersonController : MonoBehaviour
             isSprinting = true;
             staminaUITimer = 0f;
 
-            // Reset any ongoing fade-out coroutine to prevent UI conflicts
+            // Reset
             if (fadeCoroutine != null)
             {
                 StopCoroutine(fadeCoroutine);
@@ -542,10 +567,10 @@ public class ThirdPersonController : MonoBehaviour
             }
 
             shouldDisplayUI = true;
-            staminaUICanvasGroup.alpha = 1f;  // Immediately set UI alpha value to 1, making it fully visible
+            staminaUICanvasGroup.alpha = 1f;  // visible
             currentStamina -= sprintInitiationCost;
 
-            staminaUITimer = 0f;  // Reset the timer whenever sprinting starts
+            staminaUITimer = 0f;  // Reset
         }
     }
 
@@ -567,7 +592,7 @@ public class ThirdPersonController : MonoBehaviour
                 canSprint = false;
             }
 
-            staminaUITimer = 0f;  // Reset the timer when stamina is being used
+            staminaUITimer = 0f;  // Reset
             if (fadeCoroutine != null)
             {
                 StopCoroutine(fadeCoroutine);
@@ -602,13 +627,11 @@ public class ThirdPersonController : MonoBehaviour
     }
     void UpdateStaminaUI()
     {
-        // Update the UI value
         staminaSlider.value = currentStamina / maxStamina;
 
         // Determine if the UI should be displayed
         shouldDisplayUI = (isSprinting || currentStamina < maxStamina) && !isCrouching;
 
-        // Handle the visibility of the UI based on the shouldDisplayUI flag
         if (shouldDisplayUI)
         {
             if (!staminaSlider.gameObject.activeSelf)
@@ -619,7 +642,6 @@ public class ThirdPersonController : MonoBehaviour
         }
         else if (!shouldDisplayUI && staminaSlider.gameObject.activeSelf && !isUIFading)
         {
-            // If we're crouching and the stamina is full, we can disable the UI immediately
             staminaSlider.gameObject.SetActive(false);
         }
     }
@@ -709,9 +731,9 @@ public class ThirdPersonController : MonoBehaviour
     public void Die()
     {
         GameManager.Instance.LoseLife();
-        Destroy(gameObject); // Destroy the current player instance
+        Destroy(gameObject);
 
-        // Find all enemies in the scene and reset them
+        // Find all enemies
         Enemy[] enemies = FindObjectsOfType<Enemy>();
         foreach (var enemy in enemies)
         {
@@ -726,10 +748,8 @@ public class ThirdPersonController : MonoBehaviour
 			IsHidden = true;
 		}
 
-        // Check if the collider that entered the trigger is the enemy's kill collider
         if (other.CompareTag("KillRangeCollider"))
         {
-            // The player has collided with the enemy's kill collider, handle the player's death
             Die();
         }
     }
