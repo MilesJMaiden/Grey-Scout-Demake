@@ -19816,11 +19816,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   patrollingEnabled: 1
   originPoint: {x: 0, y: 0, z: 0}
-  patrolRange: 6
-  patrolSpeed: 0.75
-  chaseSpeed: 4
-  maxChaseTime: 10
-  alertTimerSlider: {fileID: 0}
+  patrolRange: 16
+  patrolSpeed: 1.2
+  chaseSpeed: 5
+  maxChaseTime: 12
   alertStateIndicator: {fileID: 3633497765695167797}
   chaseStateIndicator: {fileID: 8018957941609690317}
   alertSpeed: 0.5

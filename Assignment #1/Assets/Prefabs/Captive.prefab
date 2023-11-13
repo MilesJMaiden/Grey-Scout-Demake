@@ -2528,6 +2528,7 @@ MonoBehaviour:
   timeToLoseSight: 10
   isRescued: 0
   captivesInRange: []
+  scoreValue: 3
 --- !u!54 &5901211222943247352
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -7132,7 +7133,6 @@ GameObject:
   - component: {fileID: 8088154775928876652}
   - component: {fileID: 1776241260568180862}
   - component: {fileID: 8941971075222433649}
-  - component: {fileID: 5885752121624570653}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -7205,29 +7205,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &5885752121624570653
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3952930211953001139}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7045153801950160276
 GameObject:
   m_ObjectHideFlags: 0
