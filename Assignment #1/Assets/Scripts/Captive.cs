@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class Captive : MonoBehaviour
 {
@@ -63,6 +64,8 @@ public class Captive : MonoBehaviour
 
     [SerializeField] private bool isRescued = false;
     public List<Captive> captivesInRange = new List<Captive>();
+
+	public int scoreValue = 3;
 
 	private void Awake()
 	{
@@ -183,7 +186,7 @@ public class Captive : MonoBehaviour
             thirdPersonController.RemoveCaptive(this);
             gameObject.SetActive(false);
 
-            GameManager.Instance.AddScore(1);
+            GameManager.Instance.AddScore(scoreValue);
         }
     }
 

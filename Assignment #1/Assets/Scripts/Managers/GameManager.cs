@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -26,7 +27,7 @@ public class GameManager : MonoBehaviour
     public GameObject pauseMenuUI;
 
     [Header("Timer")]
-    public float totalTime = 300f;
+    public float gameTimer = 300f;
     private float timeRemaining;
     public TextMeshProUGUI timeText;
 
@@ -47,7 +48,7 @@ public class GameManager : MonoBehaviour
         UpdateScoreText();
         UpdateLivesText();
 
-        timeRemaining = totalTime;
+        timeRemaining = gameTimer;
         UpdateTimeText();
     }
 
@@ -78,6 +79,17 @@ public class GameManager : MonoBehaviour
                 TimeExpired();
             }
         }
+
+        // Update the timer
+        if (gameTimer > 0)
+        {
+            gameTimer -= Time.deltaTime;
+            if (gameTimer <= 0)
+            {
+                // Time's up, restart the game
+                RestartGame();
+            }
+        }
     }
 
     private void UpdateTimeText()
@@ -93,6 +105,12 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Time's up!");
         GameOver();
+    }
+
+    public void RestartGame()
+    {
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
 
@@ -168,5 +186,6 @@ public class GameManager : MonoBehaviour
     {
         // Handle game over logic here (display game over screen, restart game, etc.)
         Debug.Log("Game Over!");
+        RestartGame();
     }
 }

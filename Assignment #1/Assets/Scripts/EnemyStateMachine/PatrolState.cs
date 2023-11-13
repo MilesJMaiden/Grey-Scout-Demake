@@ -19,12 +19,10 @@ public class PatrolState : IEnemyState
             ThirdPersonController thirdPersonController = enemy.player.GetComponent<ThirdPersonController>();
             if (thirdPersonController != null)
             {
-                // If player is detected and not hidden, transition to ChaseState
                 if (!thirdPersonController.IsHidden)
                 {
                     enemy.TransitionToState(new ChaseState());
                 }
-                // If player is detected and hidden, transition to AlertState
                 else
                 {
                     enemy.TransitionToState(new AlertState(enemy, enemy.alertLookDuration, enemy.alertDetectionTime));

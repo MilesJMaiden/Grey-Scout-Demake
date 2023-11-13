@@ -20,7 +20,7 @@ public class InvestigateState : IEnemyState
     {
         Debug.Log("Entering Investigate State");
         this.enemy = enemyContext;
-        enemy.navAgent.isStopped = true; // Stop the enemy while looking around
+        enemy.navAgent.isStopped = true;
         enemy.alertStateIndicator.SetActive(true);
     }
 
