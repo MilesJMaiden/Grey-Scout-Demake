@@ -254,7 +254,6 @@ public class Captive : MonoBehaviour
 		}
 		else if (index == 0)
 		{
-			// This captive follows the player directly
 			followDistance = originalFollowDistance;
 			return playerTransform;
 		}
@@ -265,6 +264,27 @@ public class Captive : MonoBehaviour
 			return thirdPersonController.captives[index - 1].transform;
 		}
 	}
+    public void AssignNewPlayer(GameObject newPlayer)
+    {
+        thirdPersonController = newPlayer.GetComponent<ThirdPersonController>();
+        playerInteraction = newPlayer.GetComponent<PlayerInteraction>();
+        playerTransform = newPlayer.transform;
+
+        if (isFollowing)
+        {
+            navAgent.SetDestination(GetFollowTarget().position);
+        }
+
+        if (captivesInRange.Contains(this))
+        {
+            ShowInteractionText();
+        }
+        else
+        {
+            HideInteractionText();
+        }
+    }
+
     private void DisableCaptive()
     {
         enabled = false;

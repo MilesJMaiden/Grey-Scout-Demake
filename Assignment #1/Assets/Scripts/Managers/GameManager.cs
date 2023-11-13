@@ -166,20 +166,29 @@ public class GameManager : MonoBehaviour
 
     private void RespawnPlayer()
     {
-        GameObject player = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
-        ThirdPersonController controller = player.GetComponent<ThirdPersonController>();
-        if (controller != null)
+        GameObject newPlayer = Instantiate(playerPrefab, spawnPoint.position, spawnPoint.rotation);
+
+        ThirdPersonController newPlayerController = newPlayer.GetComponent<ThirdPersonController>();
+        PlayerInteraction newPlayerInteraction = newPlayer.GetComponent<PlayerInteraction>();
+
+        if (newPlayerController != null)
         {
-            // Update the camera transform on the player
-            controller.SetCamera(Camera.main.transform);
-        }
-        else
-        {
-            Debug.LogError("ThirdPersonController script not found on the respawned player.");
+            Camera mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                newPlayerController.SetCamera(mainCamera.transform);
+            }
         }
 
-        // Notify any listeners that the player has been respawned
-        OnPlayerRespawned?.Invoke(player);
+        // Notify all captives of the new player
+        Captive[] allCaptives = FindObjectsOfType<Captive>();
+        foreach (Captive captive in allCaptives)
+        {
+            captive.AssignNewPlayer(newPlayer);
+        }
+
+        // Raise the event for listeners
+        OnPlayerRespawned?.Invoke(newPlayer);
     }
 
     private void GameOver()
